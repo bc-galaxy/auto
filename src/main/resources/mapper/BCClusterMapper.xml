@@ -25,4 +25,11 @@
         <include refid="Base_Column_List" />
         from bc_cluster;
     </select>
+
+    <select id="getClusterByClusterName" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from bc_cluster where cluster_name = #{clusterName};
+    </select>
+
 </mapper>
