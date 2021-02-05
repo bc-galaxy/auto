@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface ClusterService {
 
-    void createCluster(JSONObject jsonObject)throws BaseRuntimeException;
+    boolean createCluster(JSONObject jsonObject)throws BaseRuntimeException;
 
     List<BCCluster> getBCClusterList()throws BaseRuntimeException;
 
