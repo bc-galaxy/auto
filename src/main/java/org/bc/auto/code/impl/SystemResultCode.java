@@ -7,7 +7,8 @@ public enum SystemResultCode implements ResultCode {
 
     SYSTEM_SUCCESS(200, "成功"),
     SYSTEM_ERROR(500,"系统异常"),
-    SYSTEM_NOT_FOUND(404,"资源不存在")
+    SYSTEM_NOT_FOUND(404,"资源不存在"),
+    SYSTEM_QUEUE_NULL(701,"资源不存在")
     ;
 
     private int code;

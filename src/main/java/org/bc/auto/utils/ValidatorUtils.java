@@ -11,6 +11,27 @@ import org.springframework.util.ObjectUtils;
 public class ValidatorUtils {
     private static final Logger logger = LoggerFactory.getLogger(ValidatorUtils.class);
 
+    //fabric的网络集群名称正则（也是创建K8S的namespace的规则）
+    //小写字母和-组成，8至32位
+    public final static String FABRIC_CLUSTER_NAME_REGEX= "^[a-z-]{8,32}";
+
+    //fabric的组织名称正则
+    //大写字母开头，3至16位
+    public final static String FABRIC_ORG_NAME_REGEX= "^[A-Z][a-z|0-9]{3,16}";
+
+    //fabric的通道名称正则
+    //小写字母和数字组成，3至16位
+    public static final String FABRIC_CHANNEL_NAME_REGEX = "^[a-z][a-z|0-9]{3,16}";
+
+    //fabric的节点名称正则
+    //小写祖母和数字组成，3至16位
+    public static final String FABRIC_PEER_NAME_REGEX = "^[a-z][a-z|0-9]{3,16}";
+
+    //fabric的合约名称正则
+    //字母和数字组成，3至16位
+    public static final String FABRIC_CHAIN_CODE_NAME_REGEX = "^[a-zA-Z][a-zA-Z0-9]{3,16}$";
+
+
     /**
      * 判断值是否为空
      * @param value
@@ -111,6 +132,12 @@ public class ValidatorUtils {
         return false;
     }
 
-
+    /**
+     * 判断各类组织是否符合正则表达式规则
+     *
+     */
+    public static boolean isMatches(String var,String regex){
+        return var.matches(regex);
+    }
 
 }

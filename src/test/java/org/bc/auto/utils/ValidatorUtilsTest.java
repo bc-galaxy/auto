@@ -23,6 +23,18 @@ public class ValidatorUtilsTest {
     }
 
     @Test
+    public void testIsNullListIsNull(){
+        List<String> stringList = new ArrayList<>();
+        assert(ValidatorUtils.isNull(stringList));
+    }
+    @Test
+    public void testIsNullListIsNotNull(){
+        List<String> stringList = new ArrayList<>();
+        stringList.add("string");
+        assert(!ValidatorUtils.isNull(stringList));
+    }
+
+    @Test
     public void testStringIsNull(){
         try{
             ValidatorUtils.isNotNull("");
@@ -62,7 +74,17 @@ public class ValidatorUtilsTest {
     public void testObjectListIsNull(){
         try{
             List<String> stringList = new ArrayList<>();
-            stringList.add("aaa");
+            ValidatorUtils.isNotNull(stringList);
+        }catch (BaseRuntimeException e){
+            logger.error(e.getExceptionResult().toString());
+        }
+    }
+
+    @Test
+    public void testObjectListIsNotNull(){
+        try{
+            List<String> stringList = new ArrayList<>();
+            stringList.add("string");
             ValidatorUtils.isNotNull(stringList);
         }catch (BaseRuntimeException e){
             logger.error(e.getExceptionResult().toString());
