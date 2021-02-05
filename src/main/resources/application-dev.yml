@@ -1,0 +1,67 @@
+# 服务器端口号
+server:
+  port: 60000
+
+spring:
+  application:
+    name: bc-auto
+  main:
+    allow-bean-definition-overriding: true
+  h2:
+    console:
+      path: /h2-console #进入h2 web操作界面的路径
+      enabled: true #开启h2 web界面
+  datasource:
+    url: jdbc:h2:mem:bc-auto
+    driver-class-name: org.h2.Driver
+    username: root
+    password: root
+    initialization-mode: always
+    #程序运行时，使用schema.sql来创建数据库中的表
+    schema: classpath:create_table.sql
+    #程序运行时，使用data.sql来创建初始数据
+    #data: classpath:data.sql
+  mvc:
+    throw-exception-if-no-handler-found: true
+  servlet:
+    multipart:
+      max-request-size: "3MB"
+      max-file-size: "2MB"
+    jackson:
+      time-zone: GMT+8
+mybatis:
+  # 映射xml的文件位置
+  mapper-locations: classpath:mapper/*.xml
+logging:
+  pattern:
+    console: "%d{yyyy/MM/dd-HH:mm:ss} [%thread] %-5level %logger{80}.%M:%L - %msg%n"
+  level:
+    root: debug
+    com.ks: debug
+    org.springframework.web: debug
+    org.springframework.security: debug
+    java.sql.PreparedStatement: debug
+    org.apache.ibatis: debug
+  file:
+    max-size: 1GB
+    path: ~/logs/
+
+bc-auto:
+  nfs-host: 127.0.0.1
+  nfs-path: /home/nfs_data
+  pv-suffix: pv
+  pvc-suffix: pvc
+  volume-data-suffix: data
+  pdb-suffix: pdb
+
+
+  k8s-work-path: /data/share
+
+#  generate-certs-root-path: /data/app
+#  save-certs-root-path: /data/kledger/auto
+#  fabric-tools-path: /data/share/bin/v1.4.5
+#  fabric-ca-client-msp-path: /data/share/bin/v1.4.5/msp
+#  fabric-ca-client-tls-path: /data/share/bin/v1.4.5/tls
+#  fabric-config-path: /data/share/config
+#  fabric-operate-scripts-path: /data/share/scripts/
+  fabric-peer-state-db-type: 1 # 仅支持[0：leveldb] 和 [1：couchdb]

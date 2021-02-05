@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.bc.auto.dao.BCClusterMapper">
+    <resultMap type="org.bc.auto.model.entity.BCCluster" id="BaseResultMap">
+        <id property="id" jdbcType="VARCHAR" column="id"/>
+        <id property="clusterName" jdbcType="VARCHAR" column="cluster_name"/>
+        <id property="installStatus" jdbcType="INTEGER" column="install_status"/>
+        <id property="createTime" jdbcType="BIGINT" column="create_time"/>
+        <id property="expiresTime" jdbcType="BIGINT" column="expires_time"/>
+        <id property="clusterType" jdbcType="INTEGER" column="cluster_type"/>
+        <id property="clusterVersion" jdbcType="VARCHAR" column="cluster_version"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,cluster_name,install_status,create_time,expires_time,cluster_type,cluster_version
+    </sql>
+
+    <insert id="insertCluster" parameterType="org.bc.auto.model.entity.BCCluster">
+        INSERT INTO bc_cluster (id,cluster_name,install_status,create_time,expires_time,cluster_type,cluster_version)
+         VALUES (#{id},#{clusterName},#{installStatus},#{createTime},#{expiresTime},#{clusterType},#{clusterVersion});
+    </insert>
+
+    <select id="getAllCluster" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from bc_cluster;
+    </select>
+</mapper>

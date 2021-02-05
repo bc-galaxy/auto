@@ -1,0 +1,25 @@
+## head: <type>(<scope>): <subject>
+# - type: feat, fix, docs, style, refactor, test, chore
+#	- feat feature - 所有实现新功能、新行为的 commit 都属这个类型
+#	- fix 修正缺陷的 commit
+#	- chore 日常维护性的改动，例如 linter 的配置等
+#	- test 与测试有关的改动
+#	- refactor 不改变行为的对代码结构的改进
+#	- style	对代码风格的修正（仅限缩进、空行一类的简单改动，对结构有影响的用 refactor）
+#	- cosm cosmetic - 不改变行为的对界面的纯视觉上的改动
+#	- docs 文档的改进，包括对外文档和代码注释
+#	- build 和构建流程、持续集成等有关的改动
+# - scope: 用来说明本次Commit影响的范围，即简要说明修改会涉及的部分,比如数据层、控制层、视图层等,
+# - subject: comment所在的位置,这次提交的简短描述
+## body:
+# * Why was this change necessary?
+# * How does it address the problem?
+# * Are there any side effects?
+## footer:
+# - 如果当前代码与上一个版本不兼容，则 Footer 部分以BREAKING CHANGE开头，后面是对变动的描述、以及变动理由和迁移方法
+# - BREAKING CHANGE
+# - 如果当前 commit 针对某个issue，那么可以在 Footer 部分关闭这个 issue (可依次关闭过个issueCloses #123, #245, #992)
+
+# 固定的revert
+# revert: type(scope):  some comment
+# This reverts commit bfe307ce57d87677c6c473c228e6c2ed8b81dcec.

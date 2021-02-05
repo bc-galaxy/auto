@@ -1,0 +1,8 @@
+NodeOUs:
+  Enable: true
+  ClientOUIdentifier:
+    Certificate: capath/caname
+    OrganizationalUnitIdentifier: client
+  PeerOUIdentifier:
+    Certificate: capath/caname
+    OrganizationalUnitIdentifier: peer
