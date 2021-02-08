@@ -25,6 +25,13 @@ public enum ValidatorResultCode  implements ResultCode {
     VALIDATOR_ORG_NAME_RE(10015,"组织已存在"),
     VALIDATOR_ORG_QUEUE_ERROR(10016,"组织任务加入队列失败"),
     VALIDATOR_ORG_INSERT_ERROR(10017,"组织插入数据库错误"),
+
+
+    VALIDATOR_NODE_NAME_NOT_MATCH(10018,"节点名称不符合规则，请确定"),
+    VALIDATOR_NODE_NAME_NULL(10019,"获取节点名称为空"),
+    VALIDATOR_NODE_NAME_RE(10020,"节点已存在"),
+    VALIDATOR_NODE_INSERT_ERROR(10021,"节点插入数据库错误"),
+    VALIDATOR_NODE_QUEUE_ERROR(10022,"节点加入任务队列失败"),
     ;
 
     private int code;

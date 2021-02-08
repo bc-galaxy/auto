@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.bc.auto.dao.BCOrgMapper">
+    <resultMap type="org.bc.auto.model.entity.BCOrg" id="BaseResultMap">
+        <id property="id" jdbcType="VARCHAR" column="id"/>
+        <id property="clusterId" jdbcType="VARCHAR" column="cluster_id"/>
+        <id property="orgId" jdbcType="VARCHAR" column="org_id"/>
+        <id property="nodeType" jdbcType="INTEGER" column="node_type"/>
+        <id property="nodeName" jdbcType="VARCHAR" column="node_name"/>
+        <id property="nodeIp" jdbcType="VARCHAR" column="node_ip"/>
+        <id property="nodePort" jdbcType="INTEGER" column="node_port"/>
+        <id property="nodeEventPort" jdbcType="INTEGER" column="node_event_port"/>
+        <id property="nodeTlsPath" jdbcType="VARCHAR" column="node_tls_path"/>
+        <id property="createTime" jdbcType="BIGINT" column="create_time"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,cluster_id,org_id,node_type,node_ip,node_port,node_event_port,node_tls_path,create_time,node_name
+    </sql>
+
+    <insert id="insertOrg" parameterType="org.bc.auto.model.entity.BCCluster">
+        INSERT INTO bc_node (id,cluster_id,org_id,node_type,node_ip,node_port,node_event_port,node_tls_path,create_time,node_name)
+         VALUES (#{id},#{clusterId},#{orgId},#{nodeType},#{nodeIp},#{nodePort},#{nodeEventPort},#{nodeTlsPath},#{createTime},#{nodeName});
+    </insert>
+
+    <select id="getAllOrg" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from bc_node;
+    </select>
+
+    <select id="getOrgByOrgName" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from bc_node where node_name = #{nodeName};
+    </select>
+
+    <select id="getOrgByOrgNameAndClusterId" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from bc_node where node_name = #{nodeName} and cluster_id=#{clusterId};
+    </select>
+
+</mapper>
