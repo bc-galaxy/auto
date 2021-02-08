@@ -21,7 +21,7 @@ public class BlockChainEven {
         return blockChainNetwork;
     }
 
-    public void createK8SCluster() {
+    public void doEven() {
         this.blockChainListener.doEven(this);
     }
 }
