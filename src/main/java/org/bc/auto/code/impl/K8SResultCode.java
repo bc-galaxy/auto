@@ -24,6 +24,11 @@ public enum K8SResultCode implements ResultCode {
     CHECK_POD_ERROR(20018, "检查K8S内POD出错，请确认错误信息"),
     CLEAN_ALL_POD_ERROR(20019, "删除K8S内的服务出错，请确认错误信息"),
 
+    SHELL_EXEC_ERROR(20020, "脚本执行错误，请检查脚本错误信息"),
+    SHELL_EXEC_TYPE_ERROR(20021, "没有对应的脚本执行类型，请检查脚本信息是否正确"),
+    SHELL_EXEC_PEER_ORG_CERT_ERROR(20022, "创建peer类型的组织错误"),
+
+
             ;
 
 

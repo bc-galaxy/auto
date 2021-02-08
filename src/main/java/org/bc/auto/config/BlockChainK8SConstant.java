@@ -25,7 +25,7 @@ public class BlockChainK8SConstant {
      *
      * 当需要核验生成的证书文件，请至该目录查找。
      */
-    private static String GENERATE_CERTS_PATH = String.join(File.separator,"{0}","certs");
+    private static String CERTS_PATH = String.join(File.separator,"{0}","certs","{1}");
     private static String FABRIC_TOOLS_PATH = String.join(File.separator,"{0}","bin","{1}");
     private static String FABRIC_CONFIG_PATH = String.join(File.separator,"{0}","config");
     private static String FABRIC_OPERATE_SCRIPTS_PATH = String.join(File.separator,"{0}","scripts");
@@ -34,6 +34,11 @@ public class BlockChainK8SConstant {
     private static String FABRIC_CA_CLIENT_MSP_CONFIG_FILE_PATH = String.join(File.separator,"{0}","bin","{1}","msp");
     //fabric-ca-client-msp-path
     private static String FABRIC_CA_CLIENT_TLS_CONFIG_FILE_PATH = String.join(File.separator,"{0}","bin","{1}","tls");
+
+    private static String K8S_PV_NAME = String.join("-","{0}","{1}");
+    private static String K8S_VOLUME_DATA_NAME = String.join("-","{0}","{1}");
+    private static String K8S_PVC_NAME = String.join("-","{0}","{1}");
+    private static String K8S_PDB_NAME = String.join("-","{0}","{1}");
 
 
 
@@ -44,7 +49,13 @@ public class BlockChainK8SConstant {
     }
 
     public static String getGenerateCertsPath(){
-        String generateCertsPath = MessageFormat.format(GENERATE_CERTS_PATH,BlockChainAutoConstant.K8S_WORK_PATH);
+        String generateCertsPath = MessageFormat.format(CERTS_PATH,BlockChainAutoConstant.K8S_WORK_PATH,"generate");
+        logger.info("generate cert file path is {}",generateCertsPath);
+        return generateCertsPath;
+    }
+
+    public static String getSaveCertsPath(){
+        String generateCertsPath = MessageFormat.format(CERTS_PATH,BlockChainAutoConstant.K8S_WORK_PATH,"save");
         logger.info("generate cert file path is {}",generateCertsPath);
         return generateCertsPath;
     }
@@ -80,6 +91,30 @@ public class BlockChainK8SConstant {
         String fabricCaClientTlsConfigFilePath = MessageFormat.format(FABRIC_CA_CLIENT_TLS_CONFIG_FILE_PATH,BlockChainAutoConstant.K8S_WORK_PATH,versionString);
         logger.info("fabric ca client client config file path is {}",fabricCaClientTlsConfigFilePath);
         return fabricCaClientTlsConfigFilePath;
+    }
+
+    public static String getK8sPvName(String pvName){
+        String k8sPvName = MessageFormat.format(K8S_PV_NAME,pvName,BlockChainAutoConstant.PV_SUFFIX);
+        logger.info("K8S pv Name is {}",k8sPvName);
+        return k8sPvName;
+    }
+
+    public static String getK8sVolumeDataName(String volumeDataName){
+        String k8sVolumeDataName = MessageFormat.format(K8S_VOLUME_DATA_NAME,volumeDataName,BlockChainAutoConstant.VOLUME_DATA_SUFFIX);
+        logger.info("K8S volume Data Name is {}",k8sVolumeDataName);
+        return k8sVolumeDataName;
+    }
+
+    public static String getK8sPvcName(String pvcName){
+        String k8sPvcName = MessageFormat.format(K8S_PVC_NAME,pvcName,BlockChainAutoConstant.PVC_SUFFIX);
+        logger.info("K8S pvc Name is {}",k8sPvcName);
+        return k8sPvcName;
+    }
+
+    public static String getK8sPdbName(String pdbName){
+        String k8sPdbName = MessageFormat.format(K8S_PDB_NAME,pdbName,BlockChainAutoConstant.PDB_SUFFIX);
+        logger.info("K8S pdb Name is {}",k8sPdbName);
+        return k8sPdbName;
     }
 
 

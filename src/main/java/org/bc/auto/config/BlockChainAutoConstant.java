@@ -21,6 +21,12 @@ public class BlockChainAutoConstant {
     //K8S work path
     public static String K8S_WORK_PATH;
 
+    //设置根MSP,CA的名称
+    public static String MSP_CA_NAME;
+
+    //设置TLS，CA的名称
+    public static String TLS_CA_NAME;
+
     /**
      * 需要绑定的nfsHost的值
      * @param nfsHost
@@ -84,5 +90,14 @@ public class BlockChainAutoConstant {
         BlockChainAutoConstant.K8S_WORK_PATH=k8sWorkPath;
     }
 
+    @Value("${bc-auto.msp-ca-name}")
+    public void setMspCaName(String mspCaName){
+        BlockChainAutoConstant.MSP_CA_NAME=mspCaName;
+    }
+
+    @Value("${bc-auto.tls-ca-name}")
+    public void setTlsCaName(String tlsCaName){
+        BlockChainAutoConstant.TLS_CA_NAME=tlsCaName;
+    }
 
 }
