@@ -12,7 +12,6 @@ import org.bc.auto.service.NodeService;
 import org.bc.auto.service.OrgService;
 import org.bc.auto.utils.BlockChainQueueUtils;
 import org.bc.auto.utils.DateUtils;
-import org.bc.auto.utils.StringUtils;
 import org.bc.auto.utils.ValidatorUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,7 +61,8 @@ public class NodeServiceImpl implements NodeService {
         bcNode.setClusterId(clusterId);
         bcNode.setOrgId(orgId);
         bcNode.setNodeType(nodeType);
-        
+        bcNode.setCreateTime(DateUtils.getCurrentMillisTimeStamp());
+
         int nodeResult = bcNodeMapper.insertNode(bcNode);
         //如果集群成功入库
         if(!ValidatorUtils.isGreaterThanZero(nodeResult)){
