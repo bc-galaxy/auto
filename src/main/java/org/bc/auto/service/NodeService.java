@@ -5,5 +5,5 @@ import org.bc.auto.exception.BaseRuntimeException;
 
 public interface NodeService {
 
-    void createNode(JSONObject jsonObject)throws BaseRuntimeException
+    void createNode(JSONObject jsonObject)throws BaseRuntimeException;
 }
