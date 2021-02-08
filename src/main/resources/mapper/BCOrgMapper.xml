@@ -11,15 +11,16 @@
         <id property="createTime" jdbcType="BIGINT" column="create_time"/>
         <id property="certId" jdbcType="VARCHAR" column="cert_id"/>
         <id property="clusterId" jdbcType="VARCHAR" column="cluster_id"/>
+        <id property="clusterName" jdbcType="VARCHAR" column="cluster_name"/>
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,org_name,org_msp_id,org_is_tls,org_status,org_type,create_time,cert_id,cluster_id
+        id,org_name,org_msp_id,org_is_tls,org_status,org_type,create_time,cert_id,cluster_id,cluster_name
     </sql>
 
     <insert id="insertOrg" parameterType="org.bc.auto.model.entity.BCCluster">
-        INSERT INTO bc_org (id,org_name,org_msp_id,org_is_tls,org_status,org_type,create_time,cert_id,cluster_id)
-         VALUES (#{id},#{orgName},#{orgMspId},#{orgIsTls},#{orgStatus},#{orgType},#{createTime},#{certId},#{clusterId});
+        INSERT INTO bc_org (id,org_name,org_msp_id,org_is_tls,org_status,org_type,create_time,cert_id,cluster_id,cluster_name)
+         VALUES (#{id},#{orgName},#{orgMspId},#{orgIsTls},#{orgStatus},#{orgType},#{createTime},#{certId},#{clusterId},#{clusterName});
     </insert>
 
     <select id="getAllOrg" resultMap="BaseResultMap">

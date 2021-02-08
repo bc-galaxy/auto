@@ -27,6 +27,8 @@ public class BCOrg implements Serializable,BlockChainNetwork {
 
     private String clusterId;
 
+    private String clusterName;
+
     public String getId() {
         return id;
     }
@@ -97,5 +99,13 @@ public class BCOrg implements Serializable,BlockChainNetwork {
 
     public void setClusterId(String clusterId) {
         this.clusterId = clusterId;
+    }
+
+    public String getClusterName() {
+        return clusterName;
+    }
+
+    public void setClusterName(String clusterName) {
+        this.clusterName = clusterName;
     }
 }

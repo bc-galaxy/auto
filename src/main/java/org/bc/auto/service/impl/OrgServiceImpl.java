@@ -5,9 +5,10 @@ import org.bc.auto.code.impl.ValidatorResultCode;
 import org.bc.auto.dao.BCOrgMapper;
 import org.bc.auto.exception.BaseRuntimeException;
 import org.bc.auto.exception.ValidatorException;
+import org.bc.auto.listener.BlockChainEven;
+import org.bc.auto.listener.BlockChainFabricOrgListener;
 import org.bc.auto.model.entity.BCOrg;
 import org.bc.auto.service.OrgService;
-import org.bc.auto.utils.BlockChainQueueUtils;
 import org.bc.auto.utils.DateUtils;
 import org.bc.auto.utils.StringUtils;
 import org.bc.auto.utils.ValidatorUtils;
@@ -35,6 +36,10 @@ public class OrgServiceImpl implements OrgService {
         ValidatorUtils.isNotNull(clusterId, ValidatorResultCode.VALIDATOR_CLUSTER_ID_NULL);
         logger.debug("[org->create] 创建组织，获取的集群编号信息为:{}",clusterId);
 
+        String clusterName = jsonObject.getString("clusterName");
+        ValidatorUtils.isNotNull(clusterName, ValidatorResultCode.VALIDATOR_CLUSTER_NAME_NULL);
+        logger.debug("[org->create] 创建组织，获取的集群名称信息为:{}",clusterId);
+
         String orgName = jsonObject.getString("orgName");
         ValidatorUtils.isNotNull(orgName, ValidatorResultCode.VALIDATOR_ORG_NAME_NULL);
         //判断组织名称是否匹配
@@ -59,6 +64,7 @@ public class OrgServiceImpl implements OrgService {
         BCOrg bcOrg = new BCOrg();
         bcOrg.setId(StringUtils.getId());
         bcOrg.setClusterId(clusterId);
+        bcOrg.setClusterName(clusterName);
         bcOrg.setOrgStatus(3);
         bcOrg.setOrgName(orgName);
         bcOrg.setOrgMspId(orgMspId);
@@ -66,15 +72,13 @@ public class OrgServiceImpl implements OrgService {
         bcOrg.setOrgIsTls(orgIsTls);
         bcOrg.setOrgType(orgType);
         int orgResult = bcOrgMapper.insertOrg(bcOrg);
-        //如果集群成功入库
+        //如果组织成功入库
         if(!ValidatorUtils.isGreaterThanZero(orgResult)){
             logger.error("[org->create] 创建组织，插入数据库失败，请确认。");
             throw new ValidatorException(ValidatorResultCode.VALIDATOR_ORG_INSERT_ERROR);
         }
-        boolean flag = BlockChainQueueUtils.add(bcOrg);
-        if(!flag){
-            logger.error("[org->create] 组织加入任务队列错误，请确认错误信息。");
-            throw new ValidatorException(ValidatorResultCode.VALIDATOR_ORG_QUEUE_ERROR);
-        }
+
+        //添加监听进行组织的下一步操作
+        new BlockChainEven(new BlockChainFabricOrgListener(),bcOrg).doEven();
     }
 }

@@ -88,7 +88,7 @@ public class ClusterServiceImpl implements ClusterService {
             throw new ValidatorException(ValidatorResultCode.VALIDATOR_CLUSTER_INSERT_ERROR);
         }
         //触发监听
-        new BlockChainEven(new BlockChainNetworkClusterListener(),bcCluster).createK8SCluster();
+        new BlockChainEven(new BlockChainNetworkClusterListener(),bcCluster).doEven();
         return resultFlag;
     }
 

@@ -3,14 +3,11 @@ package org.bc.auto.service.impl;
 import com.alibaba.fastjson.JSONObject;
 import org.bc.auto.code.impl.ValidatorResultCode;
 import org.bc.auto.dao.BCNodeMapper;
-import org.bc.auto.dao.BCOrgMapper;
 import org.bc.auto.exception.BaseRuntimeException;
 import org.bc.auto.exception.ValidatorException;
 import org.bc.auto.model.entity.BCNode;
-import org.bc.auto.model.entity.BCOrg;
 import org.bc.auto.service.NodeService;
-import org.bc.auto.service.OrgService;
-import org.bc.auto.utils.BlockChainQueueUtils;
+import org.bc.auto.utils.BlockChainShellQueueUtils;
 import org.bc.auto.utils.DateUtils;
 import org.bc.auto.utils.ValidatorUtils;
 import org.slf4j.Logger;
@@ -69,7 +66,7 @@ public class NodeServiceImpl implements NodeService {
             logger.error("[node->create] 创建节点，插入数据库失败，请确认。");
             throw new ValidatorException(ValidatorResultCode.VALIDATOR_NODE_INSERT_ERROR);
         }
-        boolean flag = BlockChainQueueUtils.add(bcNode);
+        boolean flag = BlockChainShellQueueUtils.add(bcNode);
         if(!flag){
             logger.error("[node->create] 组织加入任务队列错误，请确认错误信息。");
             throw new ValidatorException(ValidatorResultCode.VALIDATOR_NODE_QUEUE_ERROR);
