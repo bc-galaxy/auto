@@ -74,6 +74,10 @@ public class ClusterServiceImpl implements ClusterService {
         bcCluster.setClusterName(clusterName);
         //设置此网络集群的版本信息
         bcCluster.setClusterVersion(clusterVersion);
+        //设置集群的共识类型
+        bcCluster.setClusterConsensusType(1);
+        //设置orderer节点的总数
+        bcCluster.setOrdererCount(3);
         //设置网络集群的添加时间
         bcCluster.setCreateTime(DateUtils.getCurrentMillisTimeStamp());
         //设置安装的启动状态
@@ -87,6 +91,7 @@ public class ClusterServiceImpl implements ClusterService {
             logger.error("[cluster->create] 创建区块链集群，插入数据库失败，请确认。");
             throw new ValidatorException(ValidatorResultCode.VALIDATOR_CLUSTER_INSERT_ERROR);
         }
+
         //触发监听
         new BlockChainEven(new BlockChainNetworkClusterListener(),bcCluster).doEven();
         return resultFlag;

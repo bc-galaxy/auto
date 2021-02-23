@@ -32,8 +32,10 @@ public class BlockChainK8SConstant {
 
     //fabric-ca-client-msp-path
     private static String FABRIC_CA_CLIENT_MSP_CONFIG_FILE_PATH = String.join(File.separator,"{0}","bin","{1}","msp");
+    private static String FABRIC_CA_MSP_SERVER_URL = String.join(".","{0}","{1}","-","{2}}");
     //fabric-ca-client-msp-path
     private static String FABRIC_CA_CLIENT_TLS_CONFIG_FILE_PATH = String.join(File.separator,"{0}","bin","{1}","tls");
+    private static String FABRIC_CA_TLS_SERVER_URL = String.join(".","{0}","{1}","-","{2}}");
 
     private static String K8S_PV_NAME = String.join("-","{0}","{1}");
     private static String K8S_VOLUME_DATA_NAME = String.join("-","{0}","{1}");
@@ -41,6 +43,16 @@ public class BlockChainK8SConstant {
     private static String K8S_PDB_NAME = String.join("-","{0}","{1}");
 
 
+    public static String getFabricCaMspServerUrl(String clusterName,int port){
+        String fabricCaMspServerUrl = MessageFormat.format(FABRIC_CA_MSP_SERVER_URL,BlockChainAutoConstant.MSP_CA_NAME,clusterName,port);
+        logger.info("fabric msp ca k8s's pod svc url is '{}'",fabricCaMspServerUrl);
+        return fabricCaMspServerUrl;
+    }
+    public static String getFabricCaTlsServerUrl(String clusterName,int port){
+        String fabricCaTlsServerUrl = MessageFormat.format(FABRIC_CA_TLS_SERVER_URL,BlockChainAutoConstant.TLS_CA_NAME,clusterName,port);
+        logger.info("fabric tls ca k8s's pod svc url is '{}'",fabricCaTlsServerUrl);
+        return fabricCaTlsServerUrl;
+    }
 
     public static String getK8sConfigPath(){
         String k8sConfigPath = MessageFormat.format(K8S_CONFIG_PATH,BlockChainAutoConstant.K8S_WORK_PATH);

@@ -12,6 +12,10 @@ public class BCCluster implements Serializable,BlockChainNetwork{
     //安装状态从1往后数
     private Integer installStatus;
 
+    private int ordererCount;
+
+    private int clusterConsensusType;
+
     private Long createTime;
 
     private Long expiresTime;
@@ -76,5 +80,21 @@ public class BCCluster implements Serializable,BlockChainNetwork{
 
     public void setClusterVersion(String clusterVersion) {
         this.clusterVersion = clusterVersion;
+    }
+
+    public int getOrdererCount() {
+        return ordererCount;
+    }
+
+    public void setOrdererCount(int ordererCount) {
+        this.ordererCount = ordererCount;
+    }
+
+    public int getClusterConsensusType() {
+        return clusterConsensusType;
+    }
+
+    public void setClusterConsensusType(int clusterConsensusType) {
+        this.clusterConsensusType = clusterConsensusType;
     }
 }

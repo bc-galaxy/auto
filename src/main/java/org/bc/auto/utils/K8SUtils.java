@@ -278,8 +278,6 @@ public class K8SUtils {
         }
     }
 
-
-
     public static boolean deletePersistentVolumeClaim(String pvcName, String namespace, CoreV1Api coreV1Api) {
         // 删除 pvc
         try {

@@ -15,4 +15,6 @@ public interface BCClusterMapper {
 
     List<BCCluster> getClusterByClusterName(@Param(value = "clusterName") String clusterName);
 
+    BCCluster getClusterById(@Param(value = "clusterId") String clusterId);
+
 }

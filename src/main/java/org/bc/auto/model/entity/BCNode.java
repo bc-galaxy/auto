@@ -11,6 +11,8 @@ public class BCNode implements Serializable,BlockChainNetwork {
 
     private String orgId;
 
+    private String orgName;
+
     private String nodeName;
 
     //节点类型 1：Orderer组织的节点，2：Org组织的节点
@@ -19,6 +21,9 @@ public class BCNode implements Serializable,BlockChainNetwork {
     private String nodeIp;
 
     private Integer nodePort;
+
+    //存储类型选择，是couchDb还是levelDB
+    private Integer dbType;
 
     private Integer nodeEventPort;
 
@@ -43,6 +48,14 @@ public class BCNode implements Serializable,BlockChainNetwork {
 
     public String getClusterId() {
         return clusterId;
+    }
+
+    public Integer getDbType() {
+        return dbType;
+    }
+
+    public void setDbType(Integer dbType) {
+        this.dbType = dbType;
     }
 
     public void setClusterId(String clusterId) {
@@ -83,6 +96,14 @@ public class BCNode implements Serializable,BlockChainNetwork {
 
     public Integer getNodeEventPort() {
         return nodeEventPort;
+    }
+
+    public String getOrgName() {
+        return orgName;
+    }
+
+    public void setOrgName(String orgName) {
+        this.orgName = orgName;
     }
 
     public void setNodeEventPort(Integer nodeEventPort) {
