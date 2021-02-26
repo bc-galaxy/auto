@@ -11,6 +11,7 @@ import org.bc.auto.model.entity.BCCluster;
 import org.bc.auto.model.entity.BCNode;
 import org.bc.auto.model.vo.FabricConstructVo;
 import org.bc.auto.service.ClusterService;
+import org.bc.auto.service.NodeService;
 import org.bc.auto.service.OrgService;
 import org.bc.auto.utils.K8SUtils;
 import org.bc.auto.utils.ThreadPoolManager;
@@ -18,6 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.io.File;
 import java.util.*;
 
 public class BlockChainFabricNodeListener implements BlockChainListener{
@@ -35,8 +37,11 @@ public class BlockChainFabricNodeListener implements BlockChainListener{
         this.clusterService = clusterService;
     }
 
+    private NodeService nodeService;
     @Autowired
-
+    public void setNodeService(NodeService nodeService) {
+        this.nodeService = nodeService;
+    }
 
     @Override
     public void doEven(BlockChainEven blockChainEven) {
@@ -67,7 +72,7 @@ public class BlockChainFabricNodeListener implements BlockChainListener{
                     fabricConstructVo.setOrgMspId(String.join("",bcNode.getOrgName(),"MSP"));
                     fabricConstructVo.setTlsEnable("true");
                     fabricConstructVo.setImageName(BlockChainFabricImagesConstant.getFabricOrdereImage(bcCluster.getClusterVersion()));
-                    startOrderer(fabricConstructVo);
+                    bcNode = startOrderer(fabricConstructVo,bcNode);
                 }else{
                     fabricConstructVo.setCertPath(bcCluster.getClusterName() + "/crypto-config/peerOrganizations/" + bcNode.getOrgName() + "-" + bcCluster.getClusterName() + "/peers/" + fabricConstructVo.getNodeDomain());
                     fabricConstructVo.setDataPath(bcCluster.getClusterName() + "/data/" + bcNode.getOrgName().toLowerCase() + "-" + bcNode.getNodeName());
@@ -80,15 +85,16 @@ public class BlockChainFabricNodeListener implements BlockChainListener{
                     fabricConstructVo.setTlsEnable("true");
                     fabricConstructVo.setImageName(BlockChainFabricImagesConstant.getFabricOrdereImage(bcCluster.getClusterVersion()));
                     fabricConstructVo.setChainCodePort(7052);
-                    startPeer(fabricConstructVo);
+                    bcNode = startPeer(fabricConstructVo,bcNode);
                 }
+                nodeService.updateNode(bcNode);
             }
 
         });
     }
 
     //启动Orderer的pod
-    private void startOrderer(FabricConstructVo fabricConstructVo){
+    private BCNode startOrderer(FabricConstructVo fabricConstructVo,BCNode bcNode){
         //创建pod的deployment
         final String logLevel = "INFO";
         final String tlsEnable = "true";
@@ -162,9 +168,16 @@ public class BlockChainFabricNodeListener implements BlockChainListener{
                     );
                 }});
         K8SUtils.createDeployment(fabricConstructVo.getNameSapce(), fabricConstructVo.getNodeName(), labels, podSpec);
+
+        String nodeTlsCaPath = fabricConstructVo.getCertPath() + "/"+fabricConstructVo.getNameSapce() + "/crypto-config/ordererOrganizations/" + fabricConstructVo.getNameSapce() + "/orderers/"+fabricConstructVo.getNodeDomain() + "/tls/ca.crt";
+        bcNode.setNodePort(fabricConstructVo.getNodePort());
+        bcNode.setNodeIp(fabricConstructVo.getNodeDomain());
+        bcNode.setNodeTlsPath(nodeTlsCaPath);
+
+        return bcNode;
     }
 
-    private void startPeer(FabricConstructVo fabricConstructVo){
+    private BCNode startPeer(FabricConstructVo fabricConstructVo,BCNode bcNode){
         final String logLevel = "INFO";
         final String tlsEnable = "true";
         final String peerCertPath = fabricConstructVo.getNameSapce() + "/crypto-config/peerOrganizations/" + fabricConstructVo.getOrgName().toLowerCase() + "-" + fabricConstructVo.getNameSapce() + "/peers/" + fabricConstructVo.getNodeDomain();
@@ -289,6 +302,12 @@ public class BlockChainFabricNodeListener implements BlockChainListener{
                             .hostPath(new V1HostPathVolumeSource().path("/var/run/docker.sock")));
                 }});
         K8SUtils.createDeployment(fabricConstructVo.getNodeName(), fabricConstructVo.getNodeName(), labels, podSpec);
+
+        String nodeTlsCaPath = fabricConstructVo.getCertPath() + "/" + fabricConstructVo.getNameSapce() + "/crypto-config/peerOrganizations/" + fabricConstructVo.getOrgName().toLowerCase() + "-" + fabricConstructVo.getNameSapce() + "/peers/" + fabricConstructVo.getNodeDomain() + "/tls/ca.crt";
+        bcNode.setNodePort(fabricConstructVo.getNodePort());
+        bcNode.setNodeIp(fabricConstructVo.getNodeDomain());
+        bcNode.setNodeTlsPath(nodeTlsCaPath);
+        return bcNode;
     }
 
 }

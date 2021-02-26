@@ -7,8 +7,7 @@ import org.bc.auto.dao.BCNodeMapper;
 import org.bc.auto.exception.BaseRuntimeException;
 import org.bc.auto.exception.ValidatorException;
 import org.bc.auto.model.entity.BCNode;
-import org.bc.auto.model.entity.BlockChainArrayList;
-import org.bc.auto.model.entity.BlockChainNetwork;
+import org.bc.auto.model.entity.BlockChainNodeList;
 import org.bc.auto.service.NodeService;
 import org.bc.auto.utils.BlockChainShellQueueUtils;
 import org.bc.auto.utils.DateUtils;
@@ -40,7 +39,7 @@ public class NodeServiceImpl implements NodeService {
             //定义节点对象集合
             List<BCNode> bcNodeInsertList = new ArrayList<>();
 
-            BlockChainArrayList bcNodeBlockChainArrayList = new BlockChainArrayList<BCNode>();
+            BlockChainNodeList bcNodeBlockChainArrayList = new BlockChainNodeList<BCNode>();
 
             //对元素进行循环处理
             for(int i=0;i<jsonArray.size();i++){
@@ -78,7 +77,7 @@ public class NodeServiceImpl implements NodeService {
 
                 bcNodeInsertList.add(bcNode);
             }
-            int nodeResult = bcNodeMapper.insertNode(bcNodeInsertList);
+            int nodeResult = bcNodeMapper.insertNodeList(bcNodeInsertList);
             //如果集群成功入库
             if(!ValidatorUtils.isGreaterThanZero(nodeResult)){
                 logger.error("[node->create] 创建节点，插入数据库失败，请确认。");
@@ -93,6 +92,8 @@ public class NodeServiceImpl implements NodeService {
         }
     }
 
-
+    public int updateNode(BCNode bcNode)throws BaseRuntimeException{
+        return bcNodeMapper.updateNode(bcNode);
+    }
 
 }

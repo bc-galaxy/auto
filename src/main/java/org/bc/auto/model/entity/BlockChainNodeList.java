@@ -3,7 +3,7 @@ package org.bc.auto.model.entity;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BlockChainArrayList<E> implements BlockChainNetwork {
+public class BlockChainNodeList<E> implements BlockChainNetwork {
 
     private List<E> eList;
 

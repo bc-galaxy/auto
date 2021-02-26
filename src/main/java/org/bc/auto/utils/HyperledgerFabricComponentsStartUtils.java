@@ -100,7 +100,7 @@ public class HyperledgerFabricComponentsStartUtils {
         logger.info("create service {} successful.", name);
     }
 
-    public static BCCert generateNodeCerts(BCCluster bcCluster, BCNode bcNode) {
+    public static void generateNodeCerts(BCCluster bcCluster, BCNode bcNode) {
         String clusterName = bcCluster.getClusterName();
         // 在k8s集群内部采用 svc.namespace 的方式来进行内部访问
         String mspCaUrl = BlockChainK8SConstant.getFabricCaMspServerUrl(clusterName,CA_PORT);
@@ -127,28 +127,27 @@ public class HyperledgerFabricComponentsStartUtils {
             case 2:{
                 if (!ShellUtils.exec(scriptsPath + PEER_MSP_SCRIPT_NAME, "register_peer", clusterName, bcNode.getOrgName(), bcNode.getNodeName(), ROOT_CA_LOGIN_INFO, mspCaUrl, scriptsPath, mspScriptPath, certsRootPath, saveCertsRootPath)) {
                     logger.error("register peer -> {} for org -> {} through msp ca error.", bcNode.getNodeName(), bcNode.getOrgName());
-                    return null;
+                    throw new K8SException(K8SResultCode.SHELL_EXEC_ERROR);
                 }
                 if (!ShellUtils.exec(scriptsPath + PEER_MSP_SCRIPT_NAME, "enroll_peer", clusterName, bcNode.getOrgName(), bcNode.getNodeName(), ROOT_CA_LOGIN_INFO, mspCaUrl, scriptsPath, mspScriptPath, certsRootPath, saveCertsRootPath)) {
                     logger.error("enroll peer -> {} for org -> {} through msp ca error.", bcNode.getNodeName(), bcNode.getOrgName());
-                    return null;
+                    throw new K8SException(K8SResultCode.SHELL_EXEC_ERROR);
                 }
                 if (!ShellUtils.exec(scriptsPath + PEER_TLS_SCRIPT_NAME, "register_peer", clusterName, bcNode.getOrgName(), bcNode.getNodeName(), ROOT_CA_LOGIN_INFO, tlsCaUrl, scriptsPath, tlsScriptPath, certsRootPath, saveCertsRootPath)) {
                     logger.error("register peer -> {} for org -> {} through tls ca error.", bcNode.getNodeName(), bcNode.getOrgName());
-                    return null;
+                    throw new K8SException(K8SResultCode.SHELL_EXEC_ERROR);
                 }
                 if (!ShellUtils.exec(scriptsPath + PEER_TLS_SCRIPT_NAME, "enroll_peer", clusterName, bcNode.getOrgName(), bcNode.getNodeName(), ROOT_CA_LOGIN_INFO, tlsCaUrl, scriptsPath, tlsScriptPath, certsRootPath, saveCertsRootPath)) {
                     logger.error("enroll peer -> {} for org -> {} through tls ca error.", bcNode.getNodeName(), bcNode.getOrgName());
-                    return null;
+                    throw new K8SException(K8SResultCode.SHELL_EXEC_ERROR);
                 }
                 break;
             }
             default:{
-                return null;
+                throw new K8SException(K8SResultCode.SHELL_EXEC_ERROR);
             }
         }
 
-        return null;
     }
 
     public static BCCert generateOrgCerts(BCCluster bcCluster, BCOrg bcOrg) {

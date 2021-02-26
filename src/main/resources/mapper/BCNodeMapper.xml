@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="org.bc.auto.dao.BCOrgMapper">
-    <resultMap type="org.bc.auto.model.entity.BCOrg" id="BaseResultMap">
+<mapper namespace="org.bc.auto.dao.BCNodeMapper">
+    <resultMap type="org.bc.auto.model.entity.BCNode" id="BaseResultMap">
         <id property="id" jdbcType="VARCHAR" column="id"/>
         <id property="clusterId" jdbcType="VARCHAR" column="cluster_id"/>
         <id property="orgId" jdbcType="VARCHAR" column="org_id"/>
@@ -18,27 +18,46 @@
         id,cluster_id,org_id,node_type,node_ip,node_port,node_event_port,node_tls_path,create_time,node_name
     </sql>
 
-    <insert id="insertOrg" parameterType="org.bc.auto.model.entity.BCCluster">
+    <insert id="insertNodeList" parameterType="List">
         INSERT INTO bc_node (id,cluster_id,org_id,node_type,node_ip,node_port,node_event_port,node_tls_path,create_time,node_name)
-         VALUES (#{id},#{clusterId},#{orgId},#{nodeType},#{nodeIp},#{nodePort},#{nodeEventPort},#{nodeTlsPath},#{createTime},#{nodeName});
+        VALUES
+        <foreach collection ="list" item="bcNode" separator =",">
+            (#{bcNode.id},#{bcNode.clusterId},#{bcNode.orgId},#{bcNode.nodeType},#{bcNode.nodeIp},#{bcNode.nodePort},#{bcNode.nodeEventPort},#{bcNode.nodeTlsPath},#{bcNode.createTime},#{bcNode.nodeName});
+        </foreach >
     </insert>
 
-    <select id="getAllOrg" resultMap="BaseResultMap">
+    <select id="getAllNode" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List" />
         from bc_node;
     </select>
 
-    <select id="getOrgByOrgName" resultMap="BaseResultMap">
+    <select id="getNodeByNodeName" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List" />
         from bc_node where node_name = #{nodeName};
     </select>
 
-    <select id="getOrgByOrgNameAndClusterId" resultMap="BaseResultMap">
+    <select id="getNodeByNodeNameAndCluster" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List" />
         from bc_node where node_name = #{nodeName} and cluster_id=#{clusterId};
     </select>
+
+    <update id="updateNode" parameterType="org.bc.auto.model.entity.BCNode">
+        UPDATE bc_node
+        <set>
+            cluster_id=#{clusterId},
+            org_id=#{orgId},
+            node_type=#{nodeType},
+            node_ip=#{nodeIp},
+            node_port=#{nodePort},
+            node_event_port=#{nodeEventPort},
+            node_tls_path=#{nodeTlsPath},
+            node_name=#{nodeName}
+        </set>
+        where id=#{id}
+
+    </update>
 
 </mapper>

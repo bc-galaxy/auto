@@ -22,9 +22,6 @@ public class BCNode implements Serializable,BlockChainNetwork {
 
     private Integer nodePort;
 
-    //存储类型选择，是couchDb还是levelDB
-    private Integer dbType;
-
     private Integer nodeEventPort;
 
     private String nodeTlsPath;
@@ -48,14 +45,6 @@ public class BCNode implements Serializable,BlockChainNetwork {
 
     public String getClusterId() {
         return clusterId;
-    }
-
-    public Integer getDbType() {
-        return dbType;
-    }
-
-    public void setDbType(Integer dbType) {
-        this.dbType = dbType;
     }
 
     public void setClusterId(String clusterId) {

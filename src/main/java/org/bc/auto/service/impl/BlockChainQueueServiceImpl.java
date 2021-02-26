@@ -1,21 +1,20 @@
 package org.bc.auto.service.impl;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import org.bc.auto.dao.BCClusterMapper;
 import org.bc.auto.listener.BlockChainEven;
 import org.bc.auto.listener.BlockChainFabricNodeListener;
-import org.bc.auto.listener.BlockChainNetworkClusterListener;
 import org.bc.auto.model.entity.*;
 import org.bc.auto.service.CertService;
 import org.bc.auto.service.NodeService;
 import org.bc.auto.utils.BlockChainShellQueueUtils;
 import org.bc.auto.utils.HyperledgerFabricComponentsStartUtils;
-import org.bc.auto.utils.ValidatorUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -69,31 +68,37 @@ public class BlockChainQueueServiceImpl {
 
                     //并且当组织的类型是Orderer组织的时候，应该直接调用创建orderer节点。
                     if(bcOrg.getOrgType().intValue() ==1){
-//                        nodeService.createNode();
+                        //组织orderer节点列表的参数
+                        JSONArray jsonArray = new JSONArray();
+
+                        //确定orderer节点的次数
+                        for(int i=0 ; i<bcCluster.getOrdererCount() ;i++){
+                            JSONObject jsonObject = new JSONObject();
+                            jsonObject.put("clusterId",bcCluster.getId());
+                            jsonObject.put("nodeName","orderer"+i);
+                            jsonObject.put("nodeType",1);
+                            jsonObject.put("orgId",bcOrg.getId());
+                            jsonArray.add(jsonObject);
+                        }
+                        nodeService.createNode(jsonArray);
                     }
 
                     break;
                 }
-                case "BlockChainArrayList" : {
-                    logger.info("[queue->org] 执行创建节点脚本");
+                case "BlockChainNodeList" : {
+                    logger.info("[queue->node] 执行创建节点脚本");
 
-                    BlockChainArrayList<BCNode> bcNodeBlockChainArrayList = (BlockChainArrayList<BCNode>) blockChainNetwork;
+                    BlockChainNodeList<BCNode> bcNodeBlockChainArrayList = (BlockChainNodeList<BCNode>) blockChainNetwork;
                     List<BCNode> bcNodeList = bcNodeBlockChainArrayList.geteList();
-                    
-                    List<BCCert> bcCertList = new ArrayList<>();
+
                     for(int i=0;i<bcNodeList.size();i++){
                         BCNode bcNode = bcNodeList.get(i);
                         BCCluster bcCluster = bcClusterMapper.getClusterById(bcNode.getClusterId());
-                        BCCert bcCert = HyperledgerFabricComponentsStartUtils.generateNodeCerts(bcCluster,bcNode);
-                        //添加证书对象到证书列表中
-                        bcCertList.add(bcCert);
+                        HyperledgerFabricComponentsStartUtils.generateNodeCerts(bcCluster,bcNode);
+
                         //通知K8S启动对应的pod节点,发布监听
                         new BlockChainEven(new BlockChainFabricNodeListener(),bcNode).doEven();
                     }
-                    //添加节点操作，成功生成节点所需要的证书文件，并入库。
-
-                    //并且发布监听的事件，此事件是通知节点启动K8S的pod
-
 
                     break;
                 }
