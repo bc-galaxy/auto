@@ -2,12 +2,14 @@ package org.bc.auto.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import org.bc.auto.code.impl.ValidatorResultCode;
+import org.bc.auto.dao.BCClusterInfoMapper;
 import org.bc.auto.dao.BCClusterMapper;
 import org.bc.auto.exception.BaseRuntimeException;
 import org.bc.auto.exception.ValidatorException;
 import org.bc.auto.listener.BlockChainEven;
 import org.bc.auto.listener.BlockChainNetworkClusterListener;
 import org.bc.auto.model.entity.BCCluster;
+import org.bc.auto.model.entity.BCClusterInfo;
 import org.bc.auto.service.ClusterService;
 import org.bc.auto.utils.DateUtils;
 import org.bc.auto.utils.StringUtils;
@@ -31,7 +33,11 @@ public class ClusterServiceImpl implements ClusterService {
         this.bcClusterMapper = bcClusterMapper;
     }
 
-
+    private BCClusterInfoMapper bcClusterInfoMapper;
+    @Autowired
+    public void setBcClusterInfoMapper(BCClusterInfoMapper bcClusterInfoMapper) {
+        this.bcClusterInfoMapper = bcClusterInfoMapper;
+    }
 
     @Override
     @Transactional
@@ -85,7 +91,6 @@ public class ClusterServiceImpl implements ClusterService {
         //设置集群的过期时间，如果为0则永远不过期；如果设置了日期则会定时删除此网络集群
         bcCluster.setExpiresTime(0L);
         int clusterResult = bcClusterMapper.insertCluster(bcCluster);
-
         //如果集群成功入库
         if(!ValidatorUtils.isGreaterThanZero(clusterResult)){
             logger.error("[cluster->create] 创建区块链集群，插入数据库失败，请确认。");
@@ -97,8 +102,27 @@ public class ClusterServiceImpl implements ClusterService {
         return resultFlag;
     }
 
+    public BCCluster getBCCluster(String clusterId)throws BaseRuntimeException{
+        BCCluster  bcCluster = bcClusterMapper.getClusterById(clusterId);
+
+        if(ValidatorUtils.isNotNull(bcCluster) ){
+            return bcCluster;
+        }
+
+        throw new ValidatorException();
+    }
 
     public List<BCCluster> getBCClusterList()throws BaseRuntimeException{
         return bcClusterMapper.getAllCluster();
+    }
+
+    public BCClusterInfo getBCClusterInfo(String clusterId)throws BaseRuntimeException{
+        List<BCClusterInfo>  bcClusterInfoList = bcClusterInfoMapper.getBCClusterInfoByClusterId(clusterId);
+
+        if(ValidatorUtils.isNotNull(bcClusterInfoList) && bcClusterInfoList.size() == 1){
+            return bcClusterInfoList.get(0);
+        }
+
+        throw new ValidatorException();
     }
 }

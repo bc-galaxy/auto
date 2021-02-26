@@ -28,6 +28,8 @@ public enum K8SResultCode implements ResultCode {
     SHELL_EXEC_TYPE_ERROR(20021, "没有对应的脚本执行类型，请检查脚本信息是否正确"),
     SHELL_EXEC_PEER_ORG_CERT_ERROR(20022, "创建peer类型的组织错误"),
 
+    CREATE_SVC_FAIL(20023, "错误的创建了svc"),
+
 
             ;
 

@@ -26,6 +26,8 @@ public class BCCluster implements Serializable,BlockChainNetwork{
     //安装的版本（各种版本，如：Fabric:1.4.5）
     private String clusterVersion;
 
+    private int stateDbType;
+
     public String getId() {
         return id;
     }
@@ -96,5 +98,13 @@ public class BCCluster implements Serializable,BlockChainNetwork{
 
     public void setClusterConsensusType(int clusterConsensusType) {
         this.clusterConsensusType = clusterConsensusType;
+    }
+
+    public int getStateDbType() {
+        return stateDbType;
+    }
+
+    public void setStateDbType(int stateDbType) {
+        this.stateDbType = stateDbType;
     }
 }

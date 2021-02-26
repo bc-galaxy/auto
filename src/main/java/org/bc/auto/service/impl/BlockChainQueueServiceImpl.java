@@ -2,14 +2,19 @@ package org.bc.auto.service.impl;
 
 import org.bc.auto.dao.BCClusterMapper;
 import org.bc.auto.listener.BlockChainEven;
+import org.bc.auto.listener.BlockChainFabricNodeListener;
 import org.bc.auto.listener.BlockChainNetworkClusterListener;
 import org.bc.auto.model.entity.*;
 import org.bc.auto.utils.BlockChainShellQueueUtils;
 import org.bc.auto.utils.HyperledgerFabricComponentsStartUtils;
+import org.bc.auto.utils.ValidatorUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class BlockChainQueueServiceImpl {
@@ -49,14 +54,27 @@ public class BlockChainQueueServiceImpl {
 
                     break;
                 }
-                case "BCNode" : {
+                case "List" : {
                     logger.info("[queue->org] 执行创建节点脚本");
-                    BCNode bcNode = (BCNode) blockChainNetwork;
-                    BCCluster bcCluster = bcClusterMapper.getClusterById(bcNode.getClusterId());
-                    HyperledgerFabricComponentsStartUtils.generateNodeCerts(bcCluster,bcNode);
+
+                    List<BCNode> bcNodeList = (List<BCNode>) blockChainNetwork;
+
+                    List<BCCert> bcCertList = new ArrayList<>();
+                    for(int i=0;i<bcNodeList.size();i++){
+                        BCNode bcNode = bcNodeList.get(i);
+                        BCCluster bcCluster = bcClusterMapper.getClusterById(bcNode.getClusterId());
+                        BCCert bcCert = HyperledgerFabricComponentsStartUtils.generateNodeCerts(bcCluster,bcNode);
+                        //添加证书对象到证书列表中
+                        bcCertList.add(bcCert);
+                        //通知K8S启动对应的pod节点,发布监听
+                        new BlockChainEven(new BlockChainFabricNodeListener(),bcNode).doEven();
+                    }
                     //添加节点操作，成功生成节点所需要的证书文件，并入库。
 
                     //并且发布监听的事件，此事件是通知节点启动K8S的pod
+
+
+
                     break;
                 }
                 case "BCCert" :
