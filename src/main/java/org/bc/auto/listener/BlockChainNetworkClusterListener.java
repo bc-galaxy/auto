@@ -35,24 +35,29 @@ public class BlockChainNetworkClusterListener implements BlockChainListener{
             @Override
             public void run() {
                 try{
+                    //获取需要创建的集群对象
                     BCCluster bcCluster = (BCCluster)blockChainEven.getBlockChainNetwork();
 
-                    //创建对应的pv
+                    //创建集群对应的pv,目前支持nfs的方式。
+                    //规则："集群名称"+"-pv"
                     K8SUtils.createPersistentVolume(BlockChainK8SConstant.getK8sPvName(bcCluster.getClusterName()), BlockChainAutoConstant.NFS_HOST,BlockChainAutoConstant.NFS_PATH,"100Mi");
                     logger.info("[async] create k8s pv name, name is :{}, storage size is {}",BlockChainK8SConstant.getK8sPvName(bcCluster.getClusterName()),"100Mi");
 
-                    //创建对应的ns
+                    //创建对应的命名空间
+                    //规则：集群名称
                     K8SUtils.createNamespace(bcCluster.getClusterName());
                     logger.info("[async] create k8s name space, name is {}",bcCluster.getClusterName());
 
-                    //创建对应的pvc
+                    //创建对应的pvc，目前支持nfs的方式
+                    //规则："集群名称"+"-pvc"
                     K8SUtils.createPersistentVolumeClaim(bcCluster.getClusterName(),BlockChainK8SConstant.getK8sPvcName(bcCluster.getClusterName()),BlockChainK8SConstant.getK8sPvName(bcCluster.getClusterName()),"100Mi");
                     logger.info("[async] create k8s pvc name, name is :{}, storage size is {}",BlockChainK8SConstant.getK8sPvcName(bcCluster.getClusterName()),"100Mi");
 
-                    //启动CA服务器
+                    //启动CA服务器命令
                     String command = "bash /opt/start-rca.sh admin:adminpw";
                     //启动MSP的根CA服务器
                     HyperledgerFabricComponentsStartUtils.setupCa(bcCluster.getClusterName(),BlockChainAutoConstant.MSP_CA_NAME, BlockChainFabricImagesConstant.getFabricCaImage(bcCluster.getClusterVersion()),command);
+                    //启动TLS的根CA服务器
                     HyperledgerFabricComponentsStartUtils.setupCa(bcCluster.getClusterName(),BlockChainAutoConstant.TLS_CA_NAME, BlockChainFabricImagesConstant.getFabricCaImage(bcCluster.getClusterVersion()),command);
                     //如果最终检查ca的服务器都没有启动的话，就抛出异常
                     if(!K8SUtils.checkPodStatus(bcCluster.getClusterName())){
@@ -61,6 +66,8 @@ public class BlockChainNetworkClusterListener implements BlockChainListener{
                     }
 
                     //CA启动完成，调用组织服务
+                    //默认是orderer组织，orderer组织不需要用户手动创建
+                    //orderer组织的参数在创建集群的时候应该确定
                     JSONObject ordererJsonObject = new JSONObject();
                     ordererJsonObject.put("clusterId",bcCluster.getId());
                     ordererJsonObject.put("orgName","Orderer");

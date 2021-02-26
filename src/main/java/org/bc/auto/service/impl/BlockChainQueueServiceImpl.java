@@ -5,6 +5,8 @@ import org.bc.auto.listener.BlockChainEven;
 import org.bc.auto.listener.BlockChainFabricNodeListener;
 import org.bc.auto.listener.BlockChainNetworkClusterListener;
 import org.bc.auto.model.entity.*;
+import org.bc.auto.service.CertService;
+import org.bc.auto.service.NodeService;
 import org.bc.auto.utils.BlockChainShellQueueUtils;
 import org.bc.auto.utils.HyperledgerFabricComponentsStartUtils;
 import org.bc.auto.utils.ValidatorUtils;
@@ -27,6 +29,18 @@ public class BlockChainQueueServiceImpl {
         this.bcClusterMapper = bcClusterMapper;
     }
 
+    private CertService certService;
+    @Autowired
+    public void setCertService(CertService certService) {
+        this.certService = certService;
+    }
+
+    private NodeService nodeService;
+    @Autowired
+    public void setNodeService(NodeService nodeService) {
+        this.nodeService = nodeService;
+    }
+
     public void run(){
         while(true){
             BlockChainNetwork blockChainNetwork = null;
@@ -46,19 +60,26 @@ public class BlockChainQueueServiceImpl {
                     BCOrg bcOrg = (BCOrg) blockChainNetwork;
                     BCCluster bcCluster = bcClusterMapper.getClusterById(bcOrg.getClusterId());
                     BCCert bcCert = HyperledgerFabricComponentsStartUtils.generateOrgCerts(bcCluster, bcOrg);
-                    //如果成功申请则进行状态修改，并入库。
-                    //这里需要进行事务操作，现在的做法是详细的记录日志；并在失败的时候可以手动插入数据库。
-                    //因为shell执行成功之后，是没有办法回滚操作的，即非原子性操作，必须达到最终一致性。采用手动补偿的方式。
-                    //正式生产环境中可以采用消息队列，针对消息队列的消息进行最后确认以及补偿。
-                    //当把证书添加至数据库中，意味着组织创建成功、并且完成系统通道中的添加。
+                    //如果成功申请则进行组织的状态修改，并入库。
+                    //这里需要进行事务操作：
+                    //  shell执行成功之后，是没有办法回滚操作的，即非原子性操作，必须达到最终一致性。可以采用补偿的方式。
+                    //  正式生产环境中可以采用消息队列，针对消息队列的消息进行最后确认以及补偿。
+                    //  当把证书添加至数据库中，意味着组织创建成功。
+                    certService.insertBCCert(bcCert);
+
+                    //并且当组织的类型是Orderer组织的时候，应该直接调用创建orderer节点。
+                    if(bcOrg.getOrgType().intValue() ==1){
+//                        nodeService.createNode();
+                    }
 
                     break;
                 }
-                case "List" : {
+                case "BlockChainArrayList" : {
                     logger.info("[queue->org] 执行创建节点脚本");
 
-                    List<BCNode> bcNodeList = (List<BCNode>) blockChainNetwork;
-
+                    BlockChainArrayList<BCNode> bcNodeBlockChainArrayList = (BlockChainArrayList<BCNode>) blockChainNetwork;
+                    List<BCNode> bcNodeList = bcNodeBlockChainArrayList.geteList();
+                    
                     List<BCCert> bcCertList = new ArrayList<>();
                     for(int i=0;i<bcNodeList.size();i++){
                         BCNode bcNode = bcNodeList.get(i);
@@ -72,7 +93,6 @@ public class BlockChainQueueServiceImpl {
                     //添加节点操作，成功生成节点所需要的证书文件，并入库。
 
                     //并且发布监听的事件，此事件是通知节点启动K8S的pod
-
 
 
                     break;

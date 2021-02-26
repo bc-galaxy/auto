@@ -50,8 +50,6 @@ public class BlockChainFabricNodeListener implements BlockChainListener{
                 //获取集群对象
                 BCCluster bcCluster = clusterService.getBCCluster(bcNode.getClusterId());
 
-
-
                 //使用VO对象存储变量
                 FabricConstructVo fabricConstructVo = new FabricConstructVo();
                 fabricConstructVo.setNodeName(bcNode.getNodeName());

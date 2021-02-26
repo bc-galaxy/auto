@@ -90,6 +90,8 @@ public class ClusterServiceImpl implements ClusterService {
         bcCluster.setInstallStatus(1);
         //设置集群的过期时间，如果为0则永远不过期；如果设置了日期则会定时删除此网络集群
         bcCluster.setExpiresTime(0L);
+        //设置集群的世界状态存储类型
+        bcCluster.setStateDbType(1);
         int clusterResult = bcClusterMapper.insertCluster(bcCluster);
         //如果集群成功入库
         if(!ValidatorUtils.isGreaterThanZero(clusterResult)){
@@ -97,8 +99,9 @@ public class ClusterServiceImpl implements ClusterService {
             throw new ValidatorException(ValidatorResultCode.VALIDATOR_CLUSTER_INSERT_ERROR);
         }
 
-        //触发监听
+        //触发监听事件，去创建集群
         new BlockChainEven(new BlockChainNetworkClusterListener(),bcCluster).doEven();
+        //返回结果集
         return resultFlag;
     }
 

@@ -9,7 +9,7 @@ import java.util.List;
 @Component
 public interface BCNodeMapper {
 
-    int insertNode(BCNode bcNode);
+    int insertNode(List<BCNode> bcNodeList);
 
     List<BCNode> getAllNode();
 

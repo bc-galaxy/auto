@@ -29,6 +29,16 @@ public class BCCert implements Serializable {
 
     private String clusterId;
 
+    private String orgId;
+
+    public String getOrgId() {
+        return orgId;
+    }
+
+    public void setOrgId(String orgId) {
+        this.orgId = orgId;
+    }
+
     public String getClusterId() {
         return clusterId;
     }

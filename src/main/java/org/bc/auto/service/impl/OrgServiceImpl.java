@@ -81,7 +81,7 @@ public class OrgServiceImpl implements OrgService {
         bcOrg.setId(StringUtils.getId());
         bcOrg.setClusterId(clusterId);
         bcOrg.setClusterName(clusterName);
-        bcOrg.setOrgStatus(3);
+        bcOrg.setOrgStatus(1);
         bcOrg.setOrgName(orgName);
         bcOrg.setOrgMspId(orgMspId);
         bcOrg.setCreateTime(DateUtils.getCurrentMillisTimeStamp());
@@ -94,17 +94,14 @@ public class OrgServiceImpl implements OrgService {
             throw new ValidatorException(ValidatorResultCode.VALIDATOR_ORG_INSERT_ERROR);
         }
 
-        //添加监听进行组织的下一步操作
-//        new BlockChainEven(new BlockChainFabricOrgListener(),bcOrg).doEven();
-
         //把对应的组织对象添加至脚本的执行队列中，等待执行
-        //保证组织创建成功，就会在第一个。
+        //主要用于生成Orderer组织的MSP证书和TLS的证书
+        //在同一个集群中，创建Orderer组织的脚本得确保是优先执行；理论上队列的特性只要确定该任务是先加入队列即可。
+        //如果生产环境在集群、并发情况下，并且添加Peer组织无法控制；可以按照集群的状态决定是否创建peer的组织。
         boolean flag = BlockChainShellQueueUtils.add(bcOrg);
         if(!flag){
             logger.error("[async] 组织加入任务队列错误，请确认错误信息。");
             throw new ValidatorException(ValidatorResultCode.VALIDATOR_ORG_QUEUE_ERROR);
         }
-
-
     }
 }

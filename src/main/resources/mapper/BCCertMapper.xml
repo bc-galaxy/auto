@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.bc.auto.dao.BCCertMapper">
+    <resultMap type="org.bc.auto.model.entity.BCCert" id="BaseResultMap">
+        <id property="id" jdbcType="VARCHAR" column="id"/>
+        <id property="certName" jdbcType="VARCHAR" column="cert_name"/>
+        <id property="certPubKey" jdbcType="VARCHAR" column="cert_pub_key"/>
+        <id property="certPriKey" jdbcType="VARCHAR" column="cert_pri_key"/>
+        <id property="certCaCert" jdbcType="VARCHAR" column="cert_ca_cert"/>
+        <id property="certTlsPubKey" jdbcType="VARCHAR" column="cert_tls_pubKey"/>
+        <id property="certTlsPriKey" jdbcType="VARCHAR" column="cert_tls_priKey"/>
+        <id property="certType" jdbcType="INTEGER" column="cert_type"/>
+        <id property="certStatus" jdbcType="INTEGER" column="cert_status"/>
+        <id property="clusterId" jdbcType="VARCHAR" column="cluster_id"/>
+        <id property="orgId" jdbcType="VARCHAR" column="org_id"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,cert_name,cert_pub_key,cert_pri_key,cert_ca_cert,cert_tls_pubKey,cert_tls_priKey,cert_type,cert_status,cluster_id,org_id
+    </sql>
+
+    <insert id="insertBCCert" parameterType="org.bc.auto.model.entity.BCCert">
+        INSERT INTO bc_cert (id,cert_name,cert_pub_key,cert_pri_key,cert_ca_cert,cert_tls_pubKey,cert_tls_priKey,cert_type,cert_status,cluster_id,org_id)
+        VALUES (#{id},#{certName},#{certPubKey},#{certPriKey},#{certCaCert},#{certTlsPubKey},#{certTlsPriKey},#{certType},#{certStatus},#{clusterId},#{orgId});
+    </insert>
+
+    <select id="getBCCertByOrgAdmin" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from bc_cert WHERE org_id=#{orgId} AND cert_type=1;
+    </select>
+
+</mapper>
