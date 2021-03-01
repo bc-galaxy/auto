@@ -9,15 +9,18 @@
         <id property="expiresTime" jdbcType="BIGINT" column="expires_time"/>
         <id property="clusterType" jdbcType="INTEGER" column="cluster_type"/>
         <id property="clusterVersion" jdbcType="VARCHAR" column="cluster_version"/>
+        <id property="ordererCount" jdbcType="INTEGER" column="orderer_count"/>
+        <id property="clusterConsensusType" jdbcType="INTEGER" column="cluster_consensus_type"/>
+        <id property="stateDbType" jdbcType="INTEGER" column="state_db_type"/>
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,cluster_name,install_status,create_time,expires_time,cluster_type,cluster_version
+        id,cluster_name,install_status,create_time,expires_time,cluster_type,cluster_version,ordererCount,clusterConsensusType,stateDbType
     </sql>
 
     <insert id="insertCluster" parameterType="org.bc.auto.model.entity.BCCluster">
-        INSERT INTO bc_cluster (id,cluster_name,install_status,create_time,expires_time,cluster_type,cluster_version)
-         VALUES (#{id},#{clusterName},#{installStatus},#{createTime},#{expiresTime},#{clusterType},#{clusterVersion});
+        INSERT INTO bc_cluster (id,cluster_name,install_status,create_time,expires_time,cluster_type,cluster_version,orderer_count,cluster_consensus_type,state_db_type)
+         VALUES (#{id},#{clusterName},#{installStatus},#{createTime},#{expiresTime},#{clusterType},#{clusterVersion} ,#{ordererCount},#{clusterConsensusType},#{stateDbType});
     </insert>
 
     <select id="getAllCluster" resultMap="BaseResultMap">

@@ -5,6 +5,7 @@
         <id property="id" jdbcType="VARCHAR" column="id"/>
         <id property="clusterId" jdbcType="VARCHAR" column="cluster_id"/>
         <id property="orgId" jdbcType="VARCHAR" column="org_id"/>
+        <id property="orgName" jdbcType="VARCHAR" column="org_name"/>
         <id property="nodeType" jdbcType="INTEGER" column="node_type"/>
         <id property="nodeName" jdbcType="VARCHAR" column="node_name"/>
         <id property="nodeIp" jdbcType="VARCHAR" column="node_ip"/>
@@ -15,14 +16,14 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,cluster_id,org_id,node_type,node_ip,node_port,node_event_port,node_tls_path,create_time,node_name
+        id,cluster_id,org_id,node_type,node_ip,node_port,node_event_port,node_tls_path,create_time,node_name,org_name
     </sql>
 
     <insert id="insertNodeList" parameterType="List">
-        INSERT INTO bc_node (id,cluster_id,org_id,node_type,node_ip,node_port,node_event_port,node_tls_path,create_time,node_name)
+        INSERT INTO bc_node (id,cluster_id,org_id,node_type,node_ip,node_port,node_event_port,node_tls_path,create_time,node_name,org_name)
         VALUES
         <foreach collection ="list" item="bcNode" separator =",">
-            (#{bcNode.id},#{bcNode.clusterId},#{bcNode.orgId},#{bcNode.nodeType},#{bcNode.nodeIp},#{bcNode.nodePort},#{bcNode.nodeEventPort},#{bcNode.nodeTlsPath},#{bcNode.createTime},#{bcNode.nodeName});
+            (#{bcNode.id},#{bcNode.clusterId},#{bcNode.orgId},#{bcNode.nodeType},#{bcNode.nodeIp},#{bcNode.nodePort},#{bcNode.nodeEventPort},#{bcNode.nodeTlsPath},#{bcNode.createTime},#{bcNode.nodeName},#{bcNode.orgName});
         </foreach >
     </insert>
 
