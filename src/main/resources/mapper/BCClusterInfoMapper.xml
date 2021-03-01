@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="org.bc.auto.dao.BCClusterMapper">
+<mapper namespace="org.bc.auto.dao.BCClusterInfoMapper">
     <resultMap type="org.bc.auto.model.entity.BCClusterInfo" id="BaseResultMap">
         <id property="clusterId" jdbcType="VARCHAR" column="cluster_id"/>
         <id property="ordererCount" jdbcType="INTEGER" column="orderer_count"/>
