@@ -44,7 +44,7 @@ logging:
     org.apache.ibatis: debug
   file:
     max-size: 1GB
-    path: ~/logs/
+    path: /Users/mlamp/work_space/logs/
 
 bc-auto:
   nfs-host: 127.0.0.1
