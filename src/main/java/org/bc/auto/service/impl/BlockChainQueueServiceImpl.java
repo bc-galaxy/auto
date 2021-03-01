@@ -6,6 +6,7 @@ import org.bc.auto.dao.BCClusterMapper;
 import org.bc.auto.listener.BlockChainEven;
 import org.bc.auto.listener.BlockChainFabricNodeListener;
 import org.bc.auto.model.entity.*;
+import org.bc.auto.service.BlockChainQueueService;
 import org.bc.auto.service.CertService;
 import org.bc.auto.service.NodeService;
 import org.bc.auto.utils.BlockChainShellQueueUtils;
@@ -18,7 +19,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class BlockChainQueueServiceImpl {
+public class BlockChainQueueServiceImpl implements BlockChainQueueService {
 
     private static final Logger logger = LoggerFactory.getLogger(BlockChainQueueServiceImpl.class);
 
