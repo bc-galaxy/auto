@@ -49,7 +49,7 @@ public class ClusterServiceImpl implements ClusterService {
         String clusterName = jsonObject.getString("clusterName");
         ValidatorUtils.isNotNull(clusterName, ValidatorResultCode.VALIDATOR_CLUSTER_NAME_NULL);
         if(!ValidatorUtils.isMatches(clusterName,ValidatorUtils.FABRIC_CLUSTER_NAME_REGEX)){
-            logger.warn("[cluster->create] 创建区块链集群，集群名'{}'不符合规则",clusterName);
+            logger.error("[cluster->create] 创建区块链集群，集群名'{}'不符合规则",clusterName);
             throw new ValidatorException(ValidatorResultCode.VALIDATOR_CLUSTER_NAME_NOT_MATCH);
         }
         logger.debug("[cluster->create] 创建区块链集群，获取的集群信息为:{}",clusterName);
@@ -57,7 +57,7 @@ public class ClusterServiceImpl implements ClusterService {
         List<BCCluster> clusterList = bcClusterMapper.getClusterByClusterName(clusterName);
         //假如根据cluster的名字获取到的对象不为空，则证明重复
         if(!ValidatorUtils.isNull(clusterList)){
-            logger.warn("[cluster->create] 创建区块链集群，集群名'{}'已存在",clusterName);
+            logger.error("[cluster->create] 创建区块链集群，集群名'{}'已存在",clusterName);
             throw new ValidatorException(ValidatorResultCode.VALIDATOR_CLUSTER_NAME_RE);
         }
         //检查安装的集群版本是否为空
@@ -93,6 +93,8 @@ public class ClusterServiceImpl implements ClusterService {
         //设置集群的世界状态存储类型
         bcCluster.setStateDbType(1);
         int clusterResult = bcClusterMapper.insertCluster(bcCluster);
+        logger.info("[cluster->create] 创建区块链集群，集群信息如下：集群名称:{}，集群版本:{}，集群中orderer节点总数:{}",
+                bcCluster.getClusterName(),bcCluster.getClusterVersion(),bcCluster.getOrdererCount());
         //如果集群成功入库
         if(!ValidatorUtils.isGreaterThanZero(clusterResult)){
             logger.error("[cluster->create] 创建区块链集群，插入数据库失败，请确认。");
