@@ -21,6 +21,9 @@ public class BlockChainAutoConstant {
     //K8S work path
     public static String K8S_WORK_PATH;
 
+    //K8S work path
+    public static String K8S_DATA_PATH;
+
     //设置根MSP,CA的名称
     public static String MSP_CA_NAME;
 
@@ -100,4 +103,8 @@ public class BlockChainAutoConstant {
         BlockChainAutoConstant.TLS_CA_NAME=tlsCaName;
     }
 
+    @Value("${bc-auto.k8s-data-path}")
+    public void setK8sDataPath(String k8sDataPath){
+        BlockChainAutoConstant.K8S_DATA_PATH=k8sDataPath;
+    }
 }

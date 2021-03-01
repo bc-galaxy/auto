@@ -55,12 +55,11 @@ bc-auto:
   pdb-suffix: pdb
   msp-ca-name: msp-root-ca
   tls-ca-name: tls-root-ca
-
-
   k8s-work-path: /data/share
+  k8s-data-path: /data/auto
 
 #  generate-certs-root-path: /data/app
-#  save-certs-root-path: /data/kledger/auto
+#  save-certs-root-path: /data/auto
 #  fabric-tools-path: /data/share/bin/v1.4.5
 #  fabric-ca-client-msp-path: /data/share/bin/v1.4.5/msp
 #  fabric-ca-client-tls-path: /data/share/bin/v1.4.5/tls

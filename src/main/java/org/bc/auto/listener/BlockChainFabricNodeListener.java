@@ -14,6 +14,7 @@ import org.bc.auto.service.ClusterService;
 import org.bc.auto.service.NodeService;
 import org.bc.auto.service.OrgService;
 import org.bc.auto.utils.K8SUtils;
+import org.bc.auto.utils.SpringBeanUtil;
 import org.bc.auto.utils.ThreadPoolManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,29 +26,14 @@ import java.util.*;
 public class BlockChainFabricNodeListener implements BlockChainListener{
     private static final Logger logger = LoggerFactory.getLogger(BlockChainFabricOrgListener.class);
 
-    private OrgService orgService;
-    @Autowired
-    public void setOrgService(OrgService orgService) {
-        this.orgService = orgService;
-    }
-
-    private ClusterService clusterService;
-    @Autowired
-    public void setClusterService(ClusterService clusterService) {
-        this.clusterService = clusterService;
-    }
-
-    private NodeService nodeService;
-    @Autowired
-    public void setNodeService(NodeService nodeService) {
-        this.nodeService = nodeService;
-    }
-
     @Override
     public void doEven(BlockChainEven blockChainEven) {
         ThreadPoolManager.newInstance().addExecuteTask(new Runnable() {
             @Override
             public void run() {
+                ClusterService clusterService = SpringBeanUtil.getBean(ClusterService.class);
+                NodeService nodeService = SpringBeanUtil.getBean(NodeService.class);
+
                 //开始启动K8S的节点(分为Orderer节点和普通的Peer节点)
                 //获取事件的参数实体对象
                 BCNode bcNode = (BCNode) blockChainEven.getBlockChainNetwork();

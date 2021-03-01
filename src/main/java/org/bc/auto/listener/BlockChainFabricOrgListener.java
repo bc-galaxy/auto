@@ -10,6 +10,7 @@ import org.bc.auto.model.entity.BCOrg;
 import org.bc.auto.service.OrgService;
 import org.bc.auto.utils.BlockChainShellQueueUtils;
 import org.bc.auto.utils.HyperledgerFabricComponentsStartUtils;
+import org.bc.auto.utils.SpringBeanUtil;
 import org.bc.auto.utils.ThreadPoolManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,24 +19,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class BlockChainFabricOrgListener implements BlockChainListener{
     private static final Logger logger = LoggerFactory.getLogger(BlockChainFabricOrgListener.class);
 
-    private OrgService orgService;
-    @Autowired
-    public void setOrgService(OrgService orgService) {
-        this.orgService = orgService;
-    }
-
-    private BCClusterMapper bcClusterMapper;
-    @Autowired
-    public void setBcClusterMapper(BCClusterMapper bcClusterMapper) {
-        this.bcClusterMapper = bcClusterMapper;
-    }
-
     @Override
     public void doEven(BlockChainEven blockChainEven) {
         ThreadPoolManager.newInstance().addExecuteTask(new Runnable() {
             @Override
             public void run() {
                 try{
+//                    OrgService orgService = SpringBeanUtil.getBean(OrgService.class);
+                    BCClusterMapper bcClusterMapper = SpringBeanUtil.getBean(BCClusterMapper.class);
                     //获取需要创建的组织对象
                     BCOrg bcOrg = (BCOrg)blockChainEven.getBlockChainNetwork();
                     BCCluster bcCluster = bcClusterMapper.getClusterById(bcOrg.getClusterId());

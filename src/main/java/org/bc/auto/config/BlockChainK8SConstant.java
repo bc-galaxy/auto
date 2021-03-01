@@ -61,13 +61,13 @@ public class BlockChainK8SConstant {
     }
 
     public static String getGenerateCertsPath(){
-        String generateCertsPath = MessageFormat.format(CERTS_PATH,BlockChainAutoConstant.K8S_WORK_PATH,"generate");
+        String generateCertsPath = MessageFormat.format(CERTS_PATH,BlockChainAutoConstant.K8S_DATA_PATH,"generate");
         logger.info("generate cert file path is {}",generateCertsPath);
         return generateCertsPath;
     }
 
     public static String getSaveCertsPath(){
-        String generateCertsPath = MessageFormat.format(CERTS_PATH,BlockChainAutoConstant.K8S_WORK_PATH,"save");
+        String generateCertsPath = MessageFormat.format(CERTS_PATH,BlockChainAutoConstant.K8S_DATA_PATH,"save");
         logger.info("generate cert file path is {}",generateCertsPath);
         return generateCertsPath;
     }
@@ -79,7 +79,7 @@ public class BlockChainK8SConstant {
     }
 
     public static String getFabricConfigPath(){
-        String fabricConfigPath = MessageFormat.format(FABRIC_CONFIG_PATH,BlockChainAutoConstant.K8S_WORK_PATH);
+        String fabricConfigPath = MessageFormat.format(FABRIC_CONFIG_PATH,BlockChainAutoConstant.K8S_DATA_PATH);
         logger.info("fabric config file path is {}",fabricConfigPath);
         return fabricConfigPath;
     }
@@ -93,14 +93,14 @@ public class BlockChainK8SConstant {
 
     //FABRIC_CA_CLIENT_MSP_CONFIG_FILE_PATH
     public static String getFabricCaClientMspConfigFilePath(String versionString){
-        String fabricCaClientMspConfigFilePath = MessageFormat.format(FABRIC_CA_CLIENT_MSP_CONFIG_FILE_PATH,BlockChainAutoConstant.K8S_WORK_PATH,versionString);
+        String fabricCaClientMspConfigFilePath = MessageFormat.format(FABRIC_CA_CLIENT_MSP_CONFIG_FILE_PATH,BlockChainAutoConstant.K8S_DATA_PATH,versionString);
         logger.info("fabric ca client msp config file path is {}",fabricCaClientMspConfigFilePath);
         return fabricCaClientMspConfigFilePath;
     }
 
     //FABRIC_CA_CLIENT_TLS_CONFIG_FILE_PATH
     public static String getFabricCaClientTlsConfigFilePath(String versionString){
-        String fabricCaClientTlsConfigFilePath = MessageFormat.format(FABRIC_CA_CLIENT_TLS_CONFIG_FILE_PATH,BlockChainAutoConstant.K8S_WORK_PATH,versionString);
+        String fabricCaClientTlsConfigFilePath = MessageFormat.format(FABRIC_CA_CLIENT_TLS_CONFIG_FILE_PATH,BlockChainAutoConstant.K8S_DATA_PATH,versionString);
         logger.info("fabric ca client client config file path is {}",fabricCaClientTlsConfigFilePath);
         return fabricCaClientTlsConfigFilePath;
     }

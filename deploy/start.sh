@@ -1,2 +1,6 @@
 #!/bin/bash
-kubectl create -f /data/app/deploy/kledger-auto-deployment.yaml
+
+cd ..
+mvn clean package docker:build -Dmaven.test.skip=true
+cd deploy/
+kubectl create -f auto-deployment.yaml

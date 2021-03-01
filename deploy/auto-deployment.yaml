@@ -1,12 +1,12 @@
-# kledger auto pv
+# auto pv
 ---
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: kledger-auto
+  name: bc-auto-pv
 spec:
   capacity:
-    storage: 1Mi
+    storage: 2Mi
   accessModes:
     - ReadWriteMany
   nfs:
@@ -18,55 +18,55 @@ spec:
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: kledger-auto
+  name: bc-auto
 
-# kledger auto pvc
+# auto pvc
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: kledger-auto
-  namespace: kledger-auto
+  name: bc-auto-pvc
+  namespace: bc-auto
 spec:
   accessModes:
     - ReadWriteMany
   storageClassName: ""
   resources:
     requests:
-      storage: 1Mi
-  volumeName: kledger-auto
+      storage: 2Mi
+  volumeName: bc-auto-pv
 
-# kledger auto deployment
+#auto deployment
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  namespace: kledger-auto
-  name: kledger-auto
+  namespace: bc-auto
+  name: bc-auto
   labels:
     app: cluster
-    role: kledger-auto
+    role: bc-auto
 spec:
   replicas: 1
   selector:
     matchLabels:
       app: cluster
-      role: kledger-auto
+      role: bc-auto
   template:
     metadata:
       labels:
         app: cluster
-        role: kledger-auto
+        role: bc-auto
     spec:
       dnsPolicy: ClusterFirst
       hostAliases:
-      - ip: 192.168.87.69
+      - ip: 127.0.0.1
         hostnames:
-        - "ks3-cn-beijing.ksyun.com"
+        - "bc.auto.com"
       containers:
-      - name: kledger-auto
-        image: ksc/kledger-auto:0.0.1-SNAPSHOT
-        workingDir: /bc/baas
+      - name: bc-auto
+        image: bc/auto:1.0-SNAPSHOT
+        workingDir: /data/auto
         ports:
         - containerPort: 60000
         env:
@@ -89,47 +89,33 @@ spec:
         command:
         - /bin/bash
         - -c
-        - java -jar /app/kledger/auto/kledger-auto-0.0.1-SNAPSHOT.jar
+        - java -jar /bc/auto/auto-1.0-SNAPSHOT.jar
         # - sleep 360000
         volumeMounts:
           - name: storage
-            mountPath: "/data/kledger/auto"
-          - name: resource-data
-            mountPath: "/data/share"
-          - name: data
-            mountPath: "/data/app"
-          - name: debug
-            mountPath: "/app/kledger/auto/kledger-auto-0.0.1-SNAPSHOT.jar"
+            mountPath: "/data/auto"
       volumes:
       - name: storage
         persistentVolumeClaim:
-          claimName: kledger-auto
-      - name: resource-data
-        hostPath:
-          path: "/data/share"
-      - name: data
-        hostPath:
-          path: "/data/clusters"
-      - name: debug
-        hostPath:
-          path: "/data/app/target/kledger-auto-0.0.1-SNAPSHOT.jar"
+          claimName: bc-auto-pvc
+
 
 # kledger-auto service
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  namespace: kledger-auto
-  name: kledger-auto
+  namespace: bc-auto
+  name: bc-auto
   labels:
     app: cluster
-    role: kledger-auto
+    role: bc-auto
 spec:
   # clusterIP: None
   type: NodePort
   selector:
     app: cluster
-    role: kledger-auto
+    role: bc-auto
   ports:
     - name: auto
       port: 60000

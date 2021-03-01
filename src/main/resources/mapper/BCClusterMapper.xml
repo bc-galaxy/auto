@@ -15,7 +15,7 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,cluster_name,install_status,create_time,expires_time,cluster_type,cluster_version,ordererCount,clusterConsensusType,stateDbType
+        id,cluster_name,install_status,create_time,expires_time,cluster_type,cluster_version,orderer_count,cluster_consensus_type,state_db_type
     </sql>
 
     <insert id="insertCluster" parameterType="org.bc.auto.model.entity.BCCluster">
@@ -34,5 +34,12 @@
         <include refid="Base_Column_List" />
         from bc_cluster where cluster_name = #{clusterName};
     </select>
+
+    <select id="getClusterById" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from bc_cluster where id = #{clusterId};
+    </select>
+
 
 </mapper>

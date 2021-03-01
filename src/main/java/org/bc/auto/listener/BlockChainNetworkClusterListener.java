@@ -1,6 +1,7 @@
 package org.bc.auto.listener;
 
 import com.alibaba.fastjson.JSONObject;
+import org.apache.catalina.core.ApplicationContext;
 import org.bc.auto.code.impl.K8SResultCode;
 import org.bc.auto.config.BlockChainAutoConstant;
 import org.bc.auto.config.BlockChainFabricImagesConstant;
@@ -14,7 +15,10 @@ import org.bc.auto.utils.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
+import javax.servlet.ServletContext;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -22,12 +26,6 @@ import java.util.List;
 public class BlockChainNetworkClusterListener implements BlockChainListener{
 
     private static final Logger logger = LoggerFactory.getLogger(BlockChainNetworkClusterListener.class);
-
-    private OrgService orgService;
-    @Autowired
-    public void setOrgService(OrgService orgService) {
-        this.orgService = orgService;
-    }
 
     @Override
     public void doEven(BlockChainEven blockChainEven) {
@@ -65,6 +63,7 @@ public class BlockChainNetworkClusterListener implements BlockChainListener{
                         throw new K8SException(K8SResultCode.CHECK_POD_ERROR);
                     }
 
+                    OrgService orgService = SpringBeanUtil.getBean(OrgService.class);
                     //CA启动完成，调用组织服务
                     //默认是orderer组织，orderer组织不需要用户手动创建
                     //orderer组织的参数在创建集群的时候应该确定
@@ -75,6 +74,7 @@ public class BlockChainNetworkClusterListener implements BlockChainListener{
                     ordererJsonObject.put("orgType",1);
                     orgService.createOrg(ordererJsonObject);
                 }catch (Exception e){
+                    e.printStackTrace();
                     logger.error("[async] create cluster error, error info is {}",e.getMessage());
                     throw new K8SException();
                 }
