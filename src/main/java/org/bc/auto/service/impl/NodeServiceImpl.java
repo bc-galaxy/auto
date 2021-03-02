@@ -11,6 +11,7 @@ import org.bc.auto.model.entity.BlockChainNodeList;
 import org.bc.auto.service.NodeService;
 import org.bc.auto.utils.BlockChainShellQueueUtils;
 import org.bc.auto.utils.DateUtils;
+import org.bc.auto.utils.StringUtils;
 import org.bc.auto.utils.ValidatorUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,10 +70,12 @@ public class NodeServiceImpl implements NodeService {
                 String orgId = jsonObject.getString("orgId");
 
                 BCNode bcNode = new BCNode();
+                bcNode.setId(StringUtils.getId());
                 bcNode.setNodeName(nodeName);
                 bcNode.setClusterId(clusterId);
                 bcNode.setOrgId(orgId);
                 bcNode.setNodeType(nodeType);
+                bcNode.setOrgName(jsonObject.getString("orgName"));
                 bcNode.setCreateTime(DateUtils.getCurrentMillisTimeStamp());
 
                 bcNodeInsertList.add(bcNode);

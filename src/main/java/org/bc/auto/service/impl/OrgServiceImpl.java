@@ -6,8 +6,6 @@ import org.bc.auto.dao.BCClusterMapper;
 import org.bc.auto.dao.BCOrgMapper;
 import org.bc.auto.exception.BaseRuntimeException;
 import org.bc.auto.exception.ValidatorException;
-import org.bc.auto.listener.BlockChainEven;
-import org.bc.auto.listener.BlockChainFabricOrgListener;
 import org.bc.auto.model.entity.BCCluster;
 import org.bc.auto.model.entity.BCOrg;
 import org.bc.auto.service.NodeService;
@@ -65,7 +63,7 @@ public class OrgServiceImpl implements OrgService {
         }
         logger.info("[org->create] 创建组织，获取的组织名称信息为:{}",orgName);
         //检查组织是否存在
-        List<BCOrg> bcOrgList = bcOrgMapper.getOrgByOrgNameAndCluster(orgName,clusterId);
+        List<BCOrg> bcOrgList = bcOrgMapper.getOrgByOrgNameAndClusterId(orgName,clusterId);
         if(!ValidatorUtils.isNull(bcOrgList)){
             logger.warn("[org->create] 创建区块链集群，组织名'{}'已存在",orgName);
             throw new ValidatorException(ValidatorResultCode.VALIDATOR_ORG_NAME_RE);

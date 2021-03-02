@@ -23,6 +23,7 @@ public class ShellUtils {
         BufferedReader errorInput = null;
 
         logger.info("[shell->exec]脚本的执行地址是=>{}",cmd);
+        boolean resultFlag = false;
         try {
             //检查脚本的执行路径是否存在，
             //路径必须存在，如果不存在在抛除异常。
@@ -61,8 +62,7 @@ public class ShellUtils {
 
             // 阻塞执行线程直至脚本执行完成后返回
             int exitValue = process.waitFor();
-
-            return exitValue>0?false:true;
+            resultFlag = exitValue>0?false:true;
         } catch (BaseRuntimeException e4){
             logger.error("[shell->exec]执行脚本自定义异常，异常信息为:{}", e4.getMsg());
         } catch (IOException e1) {
@@ -80,7 +80,7 @@ public class ShellUtils {
             }catch (IOException e3){
                 logger.error("[shell->exec]关闭流异常，异常信息为:{}", e3.getMessage());
             }
-            return false;
+            return resultFlag;
         }
     }
 

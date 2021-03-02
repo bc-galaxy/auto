@@ -19,11 +19,14 @@
         id,cluster_id,org_id,node_type,node_ip,node_port,node_event_port,node_tls_path,create_time,node_name,org_name
     </sql>
 
-    <insert id="insertNodeList" parameterType="List">
+    <insert id="insertNodeList">
         INSERT INTO bc_node (id,cluster_id,org_id,node_type,node_ip,node_port,node_event_port,node_tls_path,create_time,node_name,org_name)
         VALUES
         <foreach collection ="list" item="bcNode" separator =",">
-            (#{bcNode.id},#{bcNode.clusterId},#{bcNode.orgId},#{bcNode.nodeType},#{bcNode.nodeIp},#{bcNode.nodePort},#{bcNode.nodeEventPort},#{bcNode.nodeTlsPath},#{bcNode.createTime},#{bcNode.nodeName},#{bcNode.orgName});
+            (#{bcNode.id},#{bcNode.clusterId},#{bcNode.orgId},#{bcNode.nodeType},
+             #{bcNode.nodeIp},#{bcNode.nodePort},#{bcNode.nodeEventPort},
+             #{bcNode.nodeTlsPath},#{bcNode.createTime},#{bcNode.nodeName},
+             #{bcNode.orgName})
         </foreach >
     </insert>
 

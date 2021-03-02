@@ -15,6 +15,6 @@ public interface BCOrgMapper {
     List<BCOrg> getAllOrg();
 
     List<BCOrg> getOrgByOrgName(@Param(value = "orgName") String orgName);
-    List<BCOrg> getOrgByOrgNameAndCluster(@Param(value = "orgName") String orgName,@Param(value = "clusterId") String clusterId);
+    List<BCOrg> getOrgByOrgNameAndClusterId(@Param(value = "orgName") String orgName, @Param(value = "clusterId") String clusterId);
 
 }

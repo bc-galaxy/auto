@@ -79,6 +79,7 @@ public class BlockChainQueueServiceImpl implements BlockChainQueueService {
                             jsonObject.put("nodeName","orderer"+i);
                             jsonObject.put("nodeType",1);
                             jsonObject.put("orgId",bcOrg.getId());
+                            jsonObject.put("orgName",bcOrg.getOrgName());
                             jsonArray.add(jsonObject);
                         }
                         nodeService.createNode(jsonArray);

@@ -11,7 +11,7 @@ ADD zoneinfo /usr/share/zoneinfo
 RUN ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
 
 
-RUN mkdir -p /data/share && mkdir -p /data/auto && mkdir -p /bc/auto
+RUN mkdir -p /data/share && mkdir -p /data/auto && mkdir -p /bc/auto && mkdir -p /data/auto/generate && mkdir -p /data/auto/certs
 
 # 添加kubectl连接配置文件及证书秘钥
 ADD auto /data/share
