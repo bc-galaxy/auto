@@ -66,7 +66,7 @@ spec:
       containers:
       - name: bc-auto
         image: bc/auto:1.0-SNAPSHOT
-        workingDir: /data/auto
+        workingDir: /data
         ports:
         - containerPort: 60000
         env:
@@ -89,11 +89,11 @@ spec:
         command:
         - /bin/bash
         - -c
-        - java -jar /bc/auto/auto-1.0-SNAPSHOT.jar
+        - java -jar /work/auto/auto-1.0-SNAPSHOT.jar
         # - sleep 360000
         volumeMounts:
           - name: storage
-            mountPath: "/data/auto"
+            mountPath: "/data"
       volumes:
       - name: storage
         persistentVolumeClaim:

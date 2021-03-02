@@ -81,7 +81,7 @@ public class ClusterServiceImpl implements ClusterService {
         //设置此网络集群的版本信息
         bcCluster.setClusterVersion(clusterVersion);
         //设置集群的共识类型
-        bcCluster.setClusterConsensusType(1);
+        bcCluster.setClusterConsensusType(3);
         //设置orderer节点的总数
         bcCluster.setOrdererCount(3);
         //设置网络集群的添加时间
