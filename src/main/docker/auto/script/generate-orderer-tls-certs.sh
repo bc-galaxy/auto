@@ -16,6 +16,10 @@
 # 3. ORDERER="orderer0" if the type is "ordererOrg" this para not use, must input a value
 # 4. USER_PWD="admin:adminpw"
 # 5. CA_URL="msp.intermediate.ca1:7054"
+# 6. /work/share/script/
+# 7. /work/share/bin/1.4.5/msp/
+# 8. /work/share
+# 9. /data/auto
 
 # ========================================
 OPERATE_TYPE=$1
@@ -126,7 +130,7 @@ enroll_admin_user() {
 
       cp -rf $TLSCERT_PATH/cert.pem $ADMIN_TLS/client.crt
       cp -rf $TLSKEY_PATH/*_sk $ADMIN_TLS/client.key
-      
+
       CATLS_PATH=${ROOTPATH}/$CLUSTER_NAME/tls/cacerts
       log -n "${CATLS_PATH}"
       ICATLS_PATH=${ROOTPATH}/$CLUSTER_NAME/tls/intermediatecerts

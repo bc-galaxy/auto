@@ -3,7 +3,6 @@ package org.bc.auto.utils;
 import io.kubernetes.client.custom.IntOrString;
 import io.kubernetes.client.openapi.models.*;
 import org.bc.auto.code.impl.K8SResultCode;
-import org.bc.auto.config.BlockChainFabricImagesConstant;
 import org.bc.auto.config.BlockChainK8SConstant;
 import org.bc.auto.exception.K8SException;
 import org.bc.auto.model.entity.BCCert;
@@ -109,8 +108,8 @@ public class HyperledgerFabricComponentsStartUtils {
         String scriptsPath = BlockChainK8SConstant.getFabricOperateScriptsPath();
         String mspScriptPath = BlockChainK8SConstant.getFabricCaClientMspConfigFilePath(bcCluster.getClusterVersion());
         String tlsScriptPath = BlockChainK8SConstant.getFabricCaClientTlsConfigFilePath(bcCluster.getClusterVersion());
-        String certsRootPath = BlockChainK8SConstant.getGenerateCertsPath();
-        String saveCertsRootPath = BlockChainK8SConstant.getSaveCertsPath();
+        String certsRootPath = BlockChainK8SConstant.getWorkPath();
+        String saveCertsRootPath = BlockChainK8SConstant.getSavePath();
 
         switch (bcNode.getNodeType()){
             case 1:{
@@ -157,11 +156,16 @@ public class HyperledgerFabricComponentsStartUtils {
         String tlsCaUrl = BlockChainK8SConstant.getFabricCaTlsServerUrl(clusterName,CA_PORT);
         BCCert bcCert = new BCCert();
 
+        //script path ==> /work/share/script/
         String scriptsPath = BlockChainK8SConstant.getFabricOperateScriptsPath();
+        //script path ==> /work/share/bin/1.4.5/msp/
         String mspScriptPath = BlockChainK8SConstant.getFabricCaClientMspConfigFilePath(bcCluster.getClusterVersion());
+        //script path ==> /work/share/bin/1.4.5/tls/
         String tlsScriptPath = BlockChainK8SConstant.getFabricCaClientTlsConfigFilePath(bcCluster.getClusterVersion());
-        String certsRootPath = BlockChainK8SConstant.getGenerateCertsPath();
-        String saveCertsRootPath = BlockChainK8SConstant.getSaveCertsPath();
+        //work path ==> /work/share
+        String certsRootPath = BlockChainK8SConstant.getWorkPath();
+        //data path ==> /data/auto
+        String saveCertsRootPath = BlockChainK8SConstant.getSavePath();
 
         String certUserCaCert;
         String certUserPubKey;
@@ -177,15 +181,37 @@ public class HyperledgerFabricComponentsStartUtils {
         //Orderer组织自动生成orderer的节点
         switch (bcOrg.getOrgType()){
             case 1:{
-                //确定orderer证书的存储路径前缀
+                //确定orderer证书的存储路径前缀  ==> /data/auto/mycluster/crypto-config/ordererOrganizations/mycluster/users/Admin@mycluster
                 String ordererCertPath = saveCertsRootPath + File.separator + clusterName + "/crypto-config/ordererOrganizations/" + clusterName + "/users/Admin@" + clusterName;
+
+
                 // 生成orderer msp信息
+                // /work/share/script/generate-orderer-msp-certs.sh
+                // ordererOrg
+                // mycluster
+                // orderer0
+                // admin:adminpw
+                // mspCaUrl
+                // /work/share/script/
+                // /work/share/bin/1.4.5/msp/
+                // /work/share
+                // /data/auto
                 if (!ShellUtils.exec(scriptsPath+ORDERER_MSP_SCRIPT_NAME, "ordererOrg", clusterName, "orderer0", ROOT_CA_LOGIN_INFO, mspCaUrl, scriptsPath, mspScriptPath, certsRootPath, saveCertsRootPath)) {
                     logger.error("generate orderer admin msp certs error.");
                     throw new K8SException(K8SResultCode.SHELL_EXEC_ERROR);
                 }
 
                 // 生成orderer tls信息
+                // /work/share/script/generate-orderer-tls-certs.sh
+                // ordererOrg
+                // mycluster
+                // orderer0
+                // admin:adminpw
+                // mspCaUrl
+                // /work/share/script/
+                // /work/share/bin/1.4.5/msp/
+                // /work/share
+                // /data/auto
                 if (!ShellUtils.exec(scriptsPath + ORDERER_TLS_SCRIPT_NAME, "ordererOrg", clusterName, "orderer0", ROOT_CA_LOGIN_INFO, tlsCaUrl, scriptsPath, tlsScriptPath, certsRootPath, saveCertsRootPath)) {
                     logger.error("generate orderer admin tls certs error.");
                     throw new K8SException(K8SResultCode.SHELL_EXEC_ERROR);
@@ -230,7 +256,7 @@ public class HyperledgerFabricComponentsStartUtils {
                 certTlsPriKey = adminCertPath + "/tls/client.key";
                 bcCert.setCertType(3);
                 // 将组织MSP动态添加至系统通道内
-                if (!ShellUtils.exec(scriptsPath + ADD_ORG_TO_SYS_CHANNEL, clusterName, bcOrg.getOrgName(), "Orderer", "orderer0", BlockChainK8SConstant.getFabricToolsPath(bcCluster.getClusterVersion()), BlockChainK8SConstant.getFabricOperateScriptsPath(), BlockChainK8SConstant.getSaveCertsPath())) {
+                if (!ShellUtils.exec(scriptsPath + ADD_ORG_TO_SYS_CHANNEL, clusterName, bcOrg.getOrgName(), "Orderer", "orderer0", BlockChainK8SConstant.getFabricToolsPath(bcCluster.getClusterVersion()), BlockChainK8SConstant.getFabricOperateScriptsPath(), BlockChainK8SConstant.getSavePath())) {
                     logger.error("add new org -> {} to system channel: {} error.", bcOrg.getOrgName(), clusterName);
                     throw new K8SException();
                 }
@@ -290,7 +316,7 @@ public class HyperledgerFabricComponentsStartUtils {
 
     public static void buildFabricChain(BCCluster bcCluster,BCOrg bcOrg){
         // 将config目录拷贝至pv存储目录下
-        if (!ShellUtils.exec(BlockChainK8SConstant.getFabricOperateScriptsPath() + COMMON_OPERATE_SCRIPT_NAME, "copy_config", bcCluster.getClusterName(), BlockChainK8SConstant.getFabricConfigPath(), BlockChainK8SConstant.getFabricOperateScriptsPath(), BlockChainK8SConstant.getSaveCertsPath(), "")) {
+        if (!ShellUtils.exec(BlockChainK8SConstant.getFabricOperateScriptsPath() + COMMON_OPERATE_SCRIPT_NAME, "copy_config", bcCluster.getClusterName(), BlockChainK8SConstant.getFabricConfigPath(), BlockChainK8SConstant.getFabricOperateScriptsPath(), BlockChainK8SConstant.getSavePath(), "")) {
             //证书拷贝失败
             logger.error("copy yaml config file [orderer.yaml & core.yaml] error.");
             throw new K8SException();
@@ -330,14 +356,14 @@ public class HyperledgerFabricComponentsStartUtils {
 
         // 生成configtx.yaml
         String ordererOrgMspDir = "../../crypto-config/ordererOrganizations/" + bcCluster.getClusterName().toLowerCase() + "/msp";
-        String yamlFilePath = BlockChainK8SConstant.getSaveCertsPath() + File.separator + bcCluster.getClusterName().toLowerCase() + File.separator + "channels" + File.separator + bcCluster.getClusterName().toLowerCase() + File.separator + "configtx.yaml";
-        if (!ConfigTxUtils.generateSysConfigTxYaml(3, bcOrg.getOrgName(), bcOrg.getOrgMspId(), ordererOrgMspDir, ordererAddressList, kafkaAddressList, raftConsensus, yamlFilePath)) {
+        String yamlFilePath = BlockChainK8SConstant.getSavePath() + File.separator + bcCluster.getClusterName().toLowerCase() + File.separator + "channels" + File.separator + bcCluster.getClusterName().toLowerCase() + File.separator + "configtx.yaml";
+        if (!ConfigTxUtils.generateSysConfigTxYaml(bcCluster.getClusterConsensusType(), bcOrg.getOrgName(), bcOrg.getOrgMspId(), ordererOrgMspDir, ordererAddressList, kafkaAddressList, raftConsensus, yamlFilePath)) {
 //            MemoryDataBase.updateClusterStatus(3);
             throw new K8SException();
         }
 
         // 生成系统通道创世块genesis.block
-        if (!ShellUtils.exec(BlockChainK8SConstant.getFabricOperateScriptsPath() + GENERATE_GENESIS_SCRIPT_NAME, bcCluster.getClusterName().toLowerCase(), bcCluster.getClusterName().toLowerCase(), BlockChainK8SConstant.getFabricToolsPath(bcCluster.getClusterVersion()), BlockChainK8SConstant.getFabricOperateScriptsPath(), BlockChainK8SConstant.getSaveCertsPath())) {
+        if (!ShellUtils.exec(BlockChainK8SConstant.getFabricOperateScriptsPath() + GENERATE_GENESIS_SCRIPT_NAME, bcCluster.getClusterName().toLowerCase(), bcCluster.getClusterName().toLowerCase(), BlockChainK8SConstant.getFabricToolsPath(bcCluster.getClusterVersion()), BlockChainK8SConstant.getFabricOperateScriptsPath(), BlockChainK8SConstant.getSavePath())) {
             logger.error("generate orderer genesis block by system channel -> {} error.", bcCluster.getClusterName());
 //            MemoryDataBase.updateClusterStatus(3);
             throw new K8SException();

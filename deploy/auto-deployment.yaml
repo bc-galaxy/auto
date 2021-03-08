@@ -93,7 +93,7 @@ spec:
         # - sleep 360000
         volumeMounts:
           - name: storage
-            mountPath: "/data"
+            mountPath: "/data/auto"
       volumes:
       - name: storage
         persistentVolumeClaim:

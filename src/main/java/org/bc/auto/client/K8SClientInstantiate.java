@@ -24,7 +24,7 @@ public class K8SClientInstantiate implements CommandLineRunner {
     public void run(String... args) {
         // 初始化K8s client
         try {
-            File config = new File("/data/share/kube/config");
+            File config = new File("/work/share/kube/config");
             if (config.isDirectory() || !config.exists()) {
                 logger.error("not found connect k8s config file. please check if it is exist!!!");
                 return;

@@ -56,7 +56,7 @@ bc-auto:
   msp-ca-name: msp-root-ca
   tls-ca-name: tls-root-ca
   k8s-work-path: /work/share
-  k8s-data-path: /work/auto
+  k8s-data-path: /data/auto
 
 #  generate-certs-root-path: /data/app
 #  save-certs-root-path: /data/auto
