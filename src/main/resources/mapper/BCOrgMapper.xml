@@ -29,6 +29,12 @@
         from bc_org;
     </select>
 
+    <select id="getOrgByOrgId" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from bc_org where id = #{orgId};
+    </select>
+
     <select id="getOrgByOrgName" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List" />
