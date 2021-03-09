@@ -3,16 +3,15 @@ package org.bc.auto.service.impl;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import org.bc.auto.code.impl.ValidatorResultCode;
+import org.bc.auto.dao.BCClusterMapper;
 import org.bc.auto.dao.BCNodeMapper;
 import org.bc.auto.exception.BaseRuntimeException;
 import org.bc.auto.exception.ValidatorException;
+import org.bc.auto.model.entity.BCCluster;
 import org.bc.auto.model.entity.BCNode;
 import org.bc.auto.model.entity.BlockChainNodeList;
 import org.bc.auto.service.NodeService;
-import org.bc.auto.utils.BlockChainShellQueueUtils;
-import org.bc.auto.utils.DateUtils;
-import org.bc.auto.utils.StringUtils;
-import org.bc.auto.utils.ValidatorUtils;
+import org.bc.auto.utils.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +32,13 @@ public class NodeServiceImpl implements NodeService {
         this.bcNodeMapper = bcNodeMapper;
     }
 
-    public void createNode(JSONArray jsonArray)throws BaseRuntimeException {
+    private BCClusterMapper bcClusterMapper;
+    @Autowired
+    public void setBcClusterMapper(BCClusterMapper bcClusterMapper) {
+        this.bcClusterMapper = bcClusterMapper;
+    }
+
+    public BlockChainNodeList createNode(JSONArray jsonArray)throws BaseRuntimeException {
         //假如列表中有节点元素
         if(ValidatorUtils.isGreaterThanZero(jsonArray.size())){
 
@@ -79,6 +84,9 @@ public class NodeServiceImpl implements NodeService {
                 bcNode.setCreateTime(DateUtils.getCurrentMillisTimeStamp());
 
                 bcNodeInsertList.add(bcNode);
+                //节点开始的时候生成证书
+                BCCluster bcCluster = bcClusterMapper.getClusterById(clusterId);
+                HyperledgerFabricComponentsStartUtils.generateNodeCerts(bcCluster,bcNode);
             }
             int nodeResult = bcNodeMapper.insertNodeList(bcNodeInsertList);
             //如果集群成功入库
@@ -86,13 +94,12 @@ public class NodeServiceImpl implements NodeService {
                 logger.error("[node->create] 创建节点，插入数据库失败，请确认。");
                 throw new ValidatorException(ValidatorResultCode.VALIDATOR_NODE_INSERT_ERROR);
             }
+
             bcNodeBlockChainArrayList.seteList(bcNodeInsertList);
-            boolean flag = BlockChainShellQueueUtils.add(bcNodeBlockChainArrayList);
-            if(!flag){
-                logger.error("[node->create] 组织加入任务队列错误，请确认错误信息。");
-                throw new ValidatorException(ValidatorResultCode.VALIDATOR_NODE_QUEUE_ERROR);
-            }
+
+            return bcNodeBlockChainArrayList;
         }
+        return null;
     }
 
     public int updateNode(BCNode bcNode)throws BaseRuntimeException{

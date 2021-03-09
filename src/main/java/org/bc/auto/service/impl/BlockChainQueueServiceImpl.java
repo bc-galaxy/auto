@@ -9,6 +9,7 @@ import org.bc.auto.model.entity.*;
 import org.bc.auto.service.BlockChainQueueService;
 import org.bc.auto.service.CertService;
 import org.bc.auto.service.NodeService;
+import org.bc.auto.service.OrgService;
 import org.bc.auto.utils.BlockChainShellQueueUtils;
 import org.bc.auto.utils.HyperledgerFabricComponentsStartUtils;
 import org.slf4j.Logger;
@@ -41,6 +42,12 @@ public class BlockChainQueueServiceImpl implements BlockChainQueueService {
         this.nodeService = nodeService;
     }
 
+    private OrgService orgService;
+    @Autowired
+    public void setOrgService(OrgService orgService) {
+        this.orgService = orgService;
+    }
+
     public void run(){
         while(true){
             BlockChainNetwork blockChainNetwork = null;
@@ -66,25 +73,6 @@ public class BlockChainQueueServiceImpl implements BlockChainQueueService {
                     //  正式生产环境中可以采用消息队列，针对消息队列的消息进行最后确认以及补偿。
                     //  当把证书添加至数据库中，意味着组织创建成功。
                     certService.insertBCCert(bcCert);
-
-                    //并且当组织的类型是Orderer组织的时候，应该直接调用创建orderer节点。
-                    if(bcOrg.getOrgType().intValue() ==1){
-                        //组织orderer节点列表的参数
-                        JSONArray jsonArray = new JSONArray();
-
-                        //确定orderer节点的次数
-                        for(int i=0 ; i<bcCluster.getOrdererCount() ;i++){
-                            JSONObject jsonObject = new JSONObject();
-                            jsonObject.put("clusterId",bcCluster.getId());
-                            jsonObject.put("nodeName","orderer"+i);
-                            jsonObject.put("nodeType",1);
-                            jsonObject.put("orgId",bcOrg.getId());
-                            jsonObject.put("orgName",bcOrg.getOrgName());
-                            jsonArray.add(jsonObject);
-                        }
-                        nodeService.createNode(jsonArray);
-                    }
-
                     break;
                 }
                 case "BlockChainNodeList" : {
@@ -92,12 +80,17 @@ public class BlockChainQueueServiceImpl implements BlockChainQueueService {
 
                     BlockChainNodeList<BCNode> bcNodeBlockChainArrayList = (BlockChainNodeList<BCNode>) blockChainNetwork;
                     List<BCNode> bcNodeList = bcNodeBlockChainArrayList.geteList();
+                    //监听节点事件，如果是orderer节点的情况下。
+                    //需要创建创世区块等文件
+                    if(bcNodeList.get(0).getNodeType() == 1){
+                        BCCluster bcCluster = bcClusterMapper.getClusterById(bcNodeList.get(0).getClusterId());
+                        BCOrg bcOrg =orgService.getOrgByOrgId(bcNodeList.get(0).getOrgId());
+                        HyperledgerFabricComponentsStartUtils.buildFabricChain(bcCluster,bcOrg);
+                    }
 
+                    //启动节点
                     for(int i=0;i<bcNodeList.size();i++){
                         BCNode bcNode = bcNodeList.get(i);
-                        BCCluster bcCluster = bcClusterMapper.getClusterById(bcNode.getClusterId());
-                        HyperledgerFabricComponentsStartUtils.generateNodeCerts(bcCluster,bcNode);
-
                         //通知K8S启动对应的pod节点,发布监听
                         new BlockChainEven(new BlockChainFabricNodeListener(),bcNode).doEven();
                     }

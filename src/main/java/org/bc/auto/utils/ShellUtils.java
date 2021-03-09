@@ -57,8 +57,6 @@ public class ShellUtils {
             while ((line = errorInput.readLine()) != null) {
                 logger.error("[shell->exec]=>{}",line);
             }
-            infoInput.close();
-            errorInput.close();
 
             // 阻塞执行线程直至脚本执行完成后返回
             int exitValue = process.waitFor();

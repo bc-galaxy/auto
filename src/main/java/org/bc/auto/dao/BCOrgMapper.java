@@ -13,6 +13,7 @@ public interface BCOrgMapper {
     int insertOrg(BCOrg bcOrg);
 
     List<BCOrg> getAllOrg();
+    BCOrg getOrgByOrgId(@Param(value = "orgId") String orgId);
 
     List<BCOrg> getOrgByOrgName(@Param(value = "orgName") String orgName);
     List<BCOrg> getOrgByOrgNameAndClusterId(@Param(value = "orgName") String orgName, @Param(value = "clusterId") String clusterId);

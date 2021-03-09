@@ -40,7 +40,7 @@ public class OrgServiceImpl implements OrgService {
         this.nodeService = nodeService;
     }
 
-    public void createOrg(JSONObject jsonObject)throws BaseRuntimeException {
+    public BCOrg createOrg(JSONObject jsonObject)throws BaseRuntimeException {
 
         String clusterId = jsonObject.getString("clusterId");
         ValidatorUtils.isNotNull(clusterId, ValidatorResultCode.VALIDATOR_CLUSTER_ID_NULL);
@@ -101,5 +101,10 @@ public class OrgServiceImpl implements OrgService {
             logger.error("[async] 组织加入任务队列错误，请确认错误信息。");
             throw new ValidatorException(ValidatorResultCode.VALIDATOR_ORG_QUEUE_ERROR);
         }
+        return bcOrg;
+    }
+
+    public BCOrg getOrgByOrgId(String orgId)throws BaseRuntimeException{
+        return bcOrgMapper.getOrgByOrgId(orgId);
     }
 }

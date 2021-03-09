@@ -1,15 +1,22 @@
 package org.bc.auto.listener;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.catalina.core.ApplicationContext;
 import org.bc.auto.code.impl.K8SResultCode;
+import org.bc.auto.code.impl.ValidatorResultCode;
 import org.bc.auto.config.BlockChainAutoConstant;
 import org.bc.auto.config.BlockChainFabricImagesConstant;
 import org.bc.auto.config.BlockChainK8SConstant;
+import org.bc.auto.dao.BCClusterMapper;
 import org.bc.auto.exception.K8SException;
+import org.bc.auto.exception.ValidatorException;
 import org.bc.auto.model.entity.BCCluster;
+import org.bc.auto.model.entity.BCOrg;
 import org.bc.auto.model.entity.BlockChainNetwork;
+import org.bc.auto.model.entity.BlockChainNodeList;
 import org.bc.auto.service.ClusterService;
+import org.bc.auto.service.NodeService;
 import org.bc.auto.service.OrgService;
 import org.bc.auto.utils.*;
 import org.slf4j.Logger;
@@ -72,7 +79,30 @@ public class BlockChainNetworkClusterListener implements BlockChainListener{
                     ordererJsonObject.put("orgName","Orderer");
                     ordererJsonObject.put("orgIsTls",1);
                     ordererJsonObject.put("orgType",1);
-                    orgService.createOrg(ordererJsonObject);
+                    //得到Orderer组织的返回结果
+                    BCOrg bcOrg = orgService.createOrg(ordererJsonObject);
+                    ValidatorUtils.isNotNull(bcOrg);
+
+                    //创建Orderer节点
+                    //组织orderer节点列表的参数
+                    JSONArray jsonArray = new JSONArray();
+                    NodeService nodeService = SpringBeanUtil.getBean(NodeService.class);
+                    //确定orderer节点的次数
+                    for(int i=0 ; i<bcCluster.getOrdererCount() ;i++){
+                        JSONObject jsonObject = new JSONObject();
+                        jsonObject.put("clusterId",bcCluster.getId());
+                        jsonObject.put("nodeName","orderer"+i);
+                        jsonObject.put("nodeType",1);
+                        jsonObject.put("orgId",bcOrg.getId());
+                        jsonObject.put("orgName",bcOrg.getOrgName());
+                        jsonArray.add(jsonObject);
+                    }
+                    BlockChainNodeList blockChainNodeList = nodeService.createNode(jsonArray);
+                    boolean flag = BlockChainShellQueueUtils.add(blockChainNodeList);
+                    if(!flag){
+                        logger.error("[node->create] 组织加入任务队列错误，请确认错误信息。");
+                        throw new ValidatorException(ValidatorResultCode.VALIDATOR_NODE_QUEUE_ERROR);
+                    }
                 }catch (Exception e){
                     e.printStackTrace();
                     logger.error("[async] create cluster error, error info is {}",e.getMessage());
