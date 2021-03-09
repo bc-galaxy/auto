@@ -84,9 +84,6 @@ public class NodeServiceImpl implements NodeService {
                 bcNode.setCreateTime(DateUtils.getCurrentMillisTimeStamp());
 
                 bcNodeInsertList.add(bcNode);
-                //节点开始的时候生成证书
-                BCCluster bcCluster = bcClusterMapper.getClusterById(clusterId);
-                HyperledgerFabricComponentsStartUtils.generateNodeCerts(bcCluster,bcNode);
             }
             int nodeResult = bcNodeMapper.insertNodeList(bcNodeInsertList);
             //如果集群成功入库

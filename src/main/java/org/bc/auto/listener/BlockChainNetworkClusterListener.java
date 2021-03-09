@@ -82,7 +82,7 @@ public class BlockChainNetworkClusterListener implements BlockChainListener{
                     //得到Orderer组织的返回结果
                     BCOrg bcOrg = orgService.createOrg(ordererJsonObject);
                     ValidatorUtils.isNotNull(bcOrg);
-
+                    logger.info("创建集群,Orderer组织创建成功");
                     //创建Orderer节点
                     //组织orderer节点列表的参数
                     JSONArray jsonArray = new JSONArray();

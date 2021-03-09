@@ -80,6 +80,14 @@ public class BlockChainQueueServiceImpl implements BlockChainQueueService {
 
                     BlockChainNodeList<BCNode> bcNodeBlockChainArrayList = (BlockChainNodeList<BCNode>) blockChainNetwork;
                     List<BCNode> bcNodeList = bcNodeBlockChainArrayList.geteList();
+                    //为节点申请节点证书
+                    for(int i=0;i<bcNodeList.size();i++){
+                        BCNode bcNode = bcNodeList.get(i);
+                        //节点开始的时候生成证书
+                        BCCluster bcCluster = bcClusterMapper.getClusterById(bcNode.getClusterId());
+                        HyperledgerFabricComponentsStartUtils.generateNodeCerts(bcCluster,bcNode);
+                    }
+
                     //监听节点事件，如果是orderer节点的情况下。
                     //需要创建创世区块等文件
                     if(bcNodeList.get(0).getNodeType() == 1){
