@@ -70,6 +70,10 @@ public class BlockChainNetworkClusterListener implements BlockChainListener{
                         throw new K8SException(K8SResultCode.CHECK_POD_ERROR);
                     }
 
+
+                    //CA服务完全启动之后，当前线程沉睡5秒。确保服务能正常提供服务
+                    Thread.sleep(5000L);
+
                     OrgService orgService = SpringBeanUtil.getBean(OrgService.class);
                     //CA启动完成，调用组织服务
                     //默认是orderer组织，orderer组织不需要用户手动创建
