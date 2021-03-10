@@ -42,29 +42,28 @@ public class ClusterServiceImpl implements ClusterService {
     @Override
     @Transactional
     public BCCluster createCluster(JSONObject jsonObject) throws BaseRuntimeException {
-
         //检查集群名称是否为空
         String clusterName = jsonObject.getString("clusterName");
         ValidatorUtils.isNotNull(clusterName, ValidatorResultCode.VALIDATOR_CLUSTER_NAME_NULL);
         if(!ValidatorUtils.isMatches(clusterName,ValidatorUtils.FABRIC_CLUSTER_NAME_REGEX)){
-            logger.error("[cluster->create] 创建区块链集群，集群名'{}'不符合规则",clusterName);
+            logger.error("[cluster->create] create blockchain's cluster error，make sure cluster name '{}' accord with naming convention",clusterName);
             throw new ValidatorException(ValidatorResultCode.VALIDATOR_CLUSTER_NAME_NOT_MATCH);
         }
-        logger.debug("[cluster->create] 创建区块链集群，获取的集群信息为:{}",clusterName);
+        logger.debug("[cluster->create] create blockchain's cluster，get cluster name is :{}",clusterName);
         //根据获取到的集群检查集群名称是否重复
         List<BCCluster> clusterList = bcClusterMapper.getClusterByClusterName(clusterName);
         //假如根据cluster的名字获取到的对象不为空，则证明重复
         if(!ValidatorUtils.isNull(clusterList)){
-            logger.error("[cluster->create] 创建区块链集群，集群名'{}'已存在",clusterName);
+            logger.error("[cluster->create] create blockchain's cluster，make sure cluster name '{}' is not exists",clusterName);
             throw new ValidatorException(ValidatorResultCode.VALIDATOR_CLUSTER_NAME_RE);
         }
         //检查安装的集群版本是否为空
         String clusterVersion = jsonObject.getString("clusterVersion");
         ValidatorUtils.isNotNull(clusterVersion, ValidatorResultCode.VALIDATOR_CLUSTER_VERSION_NULL);
-        logger.debug("[cluster->create] 创建区块链集群，获取的版本信息为:{}",clusterVersion);
+        logger.debug("[cluster->create] create blockchain's cluster，get cluster version is :{}",clusterVersion);
         //检查安装的集群类型是否为空，1：Fabric，2：QuoRom
         int clusterType = jsonObject.getIntValue("clusterType");
-        logger.debug("[cluster->create] 创建区块链集群，获取的安装类型信息为:{}",clusterType);
+        logger.debug("[cluster->create] create blockchain's cluster，get the cluster type is :{}, value 1 is Fabric, value 2 is QuoRom",clusterType);
         if(!ValidatorUtils.isGreaterThanZero(clusterType)){
             logger.error("[cluster->create] 创建区块链集群，请检查安装类型信息:{}",clusterType);
             throw new ValidatorException(ValidatorResultCode.VALIDATOR_CLUSTER_TYPE_NULL);
@@ -91,16 +90,17 @@ public class ClusterServiceImpl implements ClusterService {
         //设置集群的世界状态存储类型
         bcCluster.setStateDbType(1);
         int clusterResult = bcClusterMapper.insertCluster(bcCluster);
-        logger.info("[cluster->create] 创建区块链集群，集群信息如下：集群名称:{}，集群版本:{}，集群中orderer节点总数:{}",
-                bcCluster.getClusterName(),bcCluster.getClusterVersion(),bcCluster.getOrdererCount());
+        logger.info("[cluster->create] create blockchain's cluster，cluster info cluster name is '{}',cluster version is '{}', cluster type is '{}', cluster orderer count is {}",clusterName,clusterVersion,clusterType,bcCluster.getOrdererCount());
+
         //如果集群成功入库
         if(!ValidatorUtils.isGreaterThanZero(clusterResult)){
-            logger.error("[cluster->create] 创建区块链集群，插入数据库失败，请确认。");
+            logger.error("[cluster->create] create blockchain's cluster，insert database error.");
             throw new ValidatorException(ValidatorResultCode.VALIDATOR_CLUSTER_INSERT_ERROR);
         }
 
         //触发监听事件，去创建集群
         new BlockChainEven(new BlockChainNetworkClusterListener(),bcCluster).doEven();
+
         //返回结果集
         return bcCluster;
     }

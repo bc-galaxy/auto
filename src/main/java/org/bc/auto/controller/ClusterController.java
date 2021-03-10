@@ -23,14 +23,12 @@ public class ClusterController {
 
     @PostMapping("/create")
     public Result createChain(@RequestBody JSONObject jsonObject) {
-        logger.debug("[cluster->create] 用户请求区块链create方法");
-
+        logger.debug("[cluster->create] request is to create blockchain's cluster, create k8s namespace、pv、pvc too");
         JSONObject jsonObjectResult = new JSONObject();
         BCCluster bcCluster = clusterService.createCluster(jsonObject);
+        logger.info("[cluster->create] create blockchain's cluster end, cluster info => id is:{}, name is:{}, version is:{}",bcCluster.getId(),bcCluster.getClusterName(),bcCluster.getClusterVersion());
         jsonObjectResult.put("clusterId",bcCluster.getId());
         jsonObjectResult.put("clusterName",bcCluster.getClusterName());
-        jsonObjectResult.put("clusterName",bcCluster.getClusterName());
-
         return Result.success(jsonObjectResult);
     }
 
