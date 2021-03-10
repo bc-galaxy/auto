@@ -75,3 +75,15 @@ CREATE TABLE bc_cluster_info
     cluster_version VARCHAR(32) NULL DEFAULT NULL COMMENT '集群版本',
     PRIMARY KEY (cluster_id)
 );
+
+DROP TABLE IF EXISTS bc_channel;
+CREATE TABLE bc_channel
+(
+    id VARCHAR(128) NULL DEFAULT NULL COMMENT '通道编号',
+    cluster_id VARCHAR(32) NULL DEFAULT NULL COMMENT '集群编号',
+    cluster_name VARCHAR(32) NULL DEFAULT NULL COMMENT '集群名称',
+    channel_name VARCHAR(32) NULL DEFAULT NULL COMMENT '通道名称',
+    channel_status INT(4)  NULL DEFAULT NULL COMMENT '通道状态',
+    is_block_listener INT(4) NULL DEFAULT NULL COMMENT '是否开启区块监听',
+    PRIMARY KEY (id)
+);

@@ -18,7 +18,7 @@
         id,org_name,org_msp_id,org_is_tls,org_status,org_type,create_time,cert_id,cluster_id,cluster_name
     </sql>
 
-    <insert id="insertOrg" parameterType="org.bc.auto.model.entity.BCCluster">
+    <insert id="insertOrg" parameterType="org.bc.auto.model.entity.BCOrg">
         INSERT INTO bc_org (id,org_name,org_msp_id,org_is_tls,org_status,org_type,create_time,cert_id,cluster_id,cluster_name)
          VALUES (#{id},#{orgName},#{orgMspId},#{orgIsTls},#{orgStatus},#{orgType},#{createTime},#{certId},#{clusterId},#{clusterName});
     </insert>

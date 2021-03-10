@@ -32,6 +32,9 @@ public enum ValidatorResultCode  implements ResultCode {
     VALIDATOR_NODE_NAME_RE(10020,"节点已存在"),
     VALIDATOR_NODE_INSERT_ERROR(10021,"节点插入数据库错误"),
     VALIDATOR_NODE_QUEUE_ERROR(10022,"节点加入任务队列失败"),
+
+    VALIDATOR_CHANNEL_NAME_NOT_MATCH(10023,"通道名称不符合规则，请确定"),
+    VALIDATOR_CHANNEL_QUEUE_ERROR(10024,"通道任务加入队列失败"),
     ;
 
     private int code;

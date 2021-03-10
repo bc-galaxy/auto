@@ -105,6 +105,16 @@ public class BlockChainQueueServiceImpl implements BlockChainQueueService {
 
                     break;
                 }
+                case "BCChannel" : {
+                    logger.info("[queue->channel] 执行创建通道脚本");
+                    //获取集群对象，以获取更多的集群信息
+                    //并对返回的结果进行判断
+                    BCChannel bcChannel = (BCChannel) blockChainNetwork;
+                    BCCluster bcCluster = bcClusterMapper.getClusterById(bcChannel.getClusterId());
+                    //执行创建通道脚本
+
+                    break;
+                }
                 case "BCCert" :
                     logger.info("[queue->cert] 执行创建节点脚本");
                     break;

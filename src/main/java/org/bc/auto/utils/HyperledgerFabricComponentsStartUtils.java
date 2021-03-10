@@ -184,34 +184,13 @@ public class HyperledgerFabricComponentsStartUtils {
                 //确定orderer证书的存储路径前缀  ==> /data/auto/mycluster/crypto-config/ordererOrganizations/mycluster/users/Admin@mycluster
                 String ordererCertPath = saveCertsRootPath + File.separator + clusterName + "/crypto-config/ordererOrganizations/" + clusterName + "/users/Admin@" + clusterName;
 
-
                 // 生成orderer msp信息
-                // /work/share/script/generate-orderer-msp-certs.sh
-                // ordererOrg
-                // mycluster
-                // orderer0
-                // admin:adminpw
-                // mspCaUrl
-                // /work/share/script/
-                // /work/share/bin/1.4.5/msp/
-                // /work/share
-                // /data/auto
                 if (!ShellUtils.exec(scriptsPath+ORDERER_MSP_SCRIPT_NAME, "ordererOrg", clusterName, "orderer0", ROOT_CA_LOGIN_INFO, mspCaUrl, scriptsPath, mspScriptPath, certsRootPath, saveCertsRootPath)) {
                     logger.error("generate orderer admin msp certs error.");
                     throw new K8SException(K8SResultCode.SHELL_EXEC_ERROR);
                 }
 
                 // 生成orderer tls信息
-                // /work/share/script/generate-orderer-tls-certs.sh
-                // ordererOrg
-                // mycluster
-                // orderer0
-                // admin:adminpw
-                // mspCaUrl
-                // /work/share/script/
-                // /work/share/bin/1.4.5/msp/
-                // /work/share
-                // /data/auto
                 if (!ShellUtils.exec(scriptsPath + ORDERER_TLS_SCRIPT_NAME, "ordererOrg", clusterName, "orderer0", ROOT_CA_LOGIN_INFO, tlsCaUrl, scriptsPath, tlsScriptPath, certsRootPath, saveCertsRootPath)) {
                     logger.error("generate orderer admin tls certs error.");
                     throw new K8SException(K8SResultCode.SHELL_EXEC_ERROR);
@@ -240,7 +219,6 @@ public class HyperledgerFabricComponentsStartUtils {
 
                 // 生成org tls信息
                 logger.info("Register and enroll org -> {} admin tls certs begin...", bcOrg.getOrgName());
-
                 if (!ShellUtils.exec(scriptsPath + PEER_TLS_SCRIPT_NAME, "register_admin_user", clusterName, bcOrg.getOrgName(), "peer0", ROOT_CA_LOGIN_INFO, tlsCaUrl, scriptsPath, tlsScriptPath, certsRootPath, saveCertsRootPath)) {
                     logger.error("register admin user for org -> {} through tls ca error.", bcOrg.getOrgName());
                     throw new K8SException(K8SResultCode.SHELL_EXEC_PEER_ORG_CERT_ERROR);

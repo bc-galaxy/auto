@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.bc.auto.dao.BCChannelMapper">
+    <resultMap type="org.bc.auto.model.entity.BCChannel" id="BaseResultMap">
+        <id property="id" jdbcType="VARCHAR" column="id"/>
+        <id property="clusterId" jdbcType="VARCHAR" column="cluster_id"/>
+        <id property="clusterName" jdbcType="VARCHAR" column="cluster_name"/>
+        <id property="channelName" jdbcType="VARCHAR" column="channel_name"/>
+        <id property="channelStatus" jdbcType="INTEGER" column="channel_status"/>
+        <id property="isBlockListener" jdbcType="INTEGER" column="is_block_listener"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,cluster_id,cluster_name,channel_name,channel_status,is_block_listener
+    </sql>
+
+    <insert id="insertChannel" parameterType="org.bc.auto.model.entity.BCChannel">
+        INSERT INTO bc_channel (id,cluster_id,cluster_name,channel_name,channel_status,is_block_listener)
+         VALUES (#{id},#{clusterId},#{clusterName},#{channelName},#{channelStatus},#{isBlockListener});
+    </insert>
+
+
+</mapper>
