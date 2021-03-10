@@ -41,9 +41,7 @@ public class ClusterServiceImpl implements ClusterService {
 
     @Override
     @Transactional
-    public boolean createCluster(JSONObject jsonObject) throws BaseRuntimeException {
-        //创建返回的结果变量
-        boolean resultFlag = true;
+    public BCCluster createCluster(JSONObject jsonObject) throws BaseRuntimeException {
 
         //检查集群名称是否为空
         String clusterName = jsonObject.getString("clusterName");
@@ -104,7 +102,7 @@ public class ClusterServiceImpl implements ClusterService {
         //触发监听事件，去创建集群
         new BlockChainEven(new BlockChainNetworkClusterListener(),bcCluster).doEven();
         //返回结果集
-        return resultFlag;
+        return bcCluster;
     }
 
     public BCCluster getBCCluster(String clusterId)throws BaseRuntimeException{

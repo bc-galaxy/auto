@@ -20,12 +20,12 @@ public enum SystemResultCode implements ResultCode {
 
     @Override
     public int getCode() {
-        return 0;
+        return SYSTEM_SUCCESS.code;
     }
 
     @Override
     public String getMsg() {
-        return null;
+        return SYSTEM_SUCCESS.msg;
     }
 
 }

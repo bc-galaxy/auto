@@ -1,6 +1,7 @@
 package org.bc.auto.controller;
 
 import com.alibaba.fastjson.JSONObject;
+import org.bc.auto.model.entity.BCCluster;
 import org.bc.auto.model.vo.Result;
 import org.bc.auto.service.ClusterService;
 import org.slf4j.Logger;
@@ -9,10 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/chain")
-public class ChainController {
+@RequestMapping("/cluster")
+public class ClusterController {
 
-    private static final Logger logger = LoggerFactory.getLogger(ChainController.class);
+    private static final Logger logger = LoggerFactory.getLogger(ClusterController.class);
 
     private ClusterService clusterService;
     @Autowired
@@ -22,10 +23,15 @@ public class ChainController {
 
     @PostMapping("/create")
     public Result createChain(@RequestBody JSONObject jsonObject) {
-        logger.debug("[chain->create] 用户请求区块链create方法");
+        logger.debug("[cluster->create] 用户请求区块链create方法");
 
-        clusterService.createCluster(jsonObject);
-        return Result.success();
+        JSONObject jsonObjectResult = new JSONObject();
+        BCCluster bcCluster = clusterService.createCluster(jsonObject);
+        jsonObjectResult.put("clusterId",bcCluster.getId());
+        jsonObjectResult.put("clusterName",bcCluster.getClusterName());
+        jsonObjectResult.put("clusterName",bcCluster.getClusterName());
+
+        return Result.success(jsonObjectResult);
     }
 
     @GetMapping("/all")
