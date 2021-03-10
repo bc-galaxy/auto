@@ -191,8 +191,6 @@ copy_certs_to_crypto_config_dir() {
    CRYPTO_PATH="$SAVE_CERTS_ROOT_PATH/$CLUSTER_NAME/crypto-config/ordererOrganizations"
    if [ ! -d $CRYPTO_PATH ]; then
       mkdir -p ${CRYPTO_PATH}
-   else
-      rm -rf $CRYPTO_PATH/*
    fi
    cp -rf $ROOTPATH/$CLUSTER_NAME/ $CRYPTO_PATH
    log -n "Copy certs done."
@@ -206,11 +204,11 @@ if [ $OPERATE_TYPE = "ordererOrg" ]; then
    get_ca_cert
    register_admin_user
    enroll_admin_user
-#   copy_certs_to_crypto_config_dir
+   copy_certs_to_crypto_config_dir
 elif [ $OPERATE_TYPE = "orderer" ]; then
    register_orderer
    enroll_orderer
-#   copy_certs_to_crypto_config_dir
+   copy_certs_to_crypto_config_dir
 else
    log -n "Operate type error."
    exit 1
