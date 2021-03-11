@@ -2,34 +2,22 @@ package org.bc.auto.listener;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import org.apache.catalina.core.ApplicationContext;
 import org.bc.auto.code.impl.BlockChainResultCode;
 import org.bc.auto.code.impl.K8SResultCode;
 import org.bc.auto.code.impl.ValidatorResultCode;
 import org.bc.auto.config.BlockChainAutoConstant;
 import org.bc.auto.config.BlockChainFabricImagesConstant;
 import org.bc.auto.config.BlockChainK8SConstant;
-import org.bc.auto.dao.BCClusterMapper;
 import org.bc.auto.exception.K8SException;
 import org.bc.auto.exception.ValidatorException;
 import org.bc.auto.model.entity.BCCluster;
 import org.bc.auto.model.entity.BCOrg;
-import org.bc.auto.model.entity.BlockChainNetwork;
 import org.bc.auto.model.entity.BlockChainNodeList;
-import org.bc.auto.service.ClusterService;
 import org.bc.auto.service.NodeService;
 import org.bc.auto.service.OrgService;
 import org.bc.auto.utils.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.context.support.WebApplicationContextUtils;
-
-import javax.servlet.ServletContext;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
 
 public class BlockChainNetworkClusterListener implements BlockChainListener{
 
@@ -61,9 +49,9 @@ public class BlockChainNetworkClusterListener implements BlockChainListener{
                     String command = "bash /opt/start-rca.sh admin:adminpw";
                     logger.debug("[async->cluster] create blockchain's cluster, this is to start ca server, command is '{}'",command);
                     //启动MSP的根CA服务器
-                    HyperledgerFabricComponentsStartUtils.setupCa(bcCluster.getClusterName(),BlockChainAutoConstant.MSP_CA_NAME, BlockChainFabricImagesConstant.getFabricCaImage(bcCluster.getClusterVersion()),command);
+                    HyperledgerFabricComponentsStartUtils.startHyperledgerFabricCaServer(bcCluster.getClusterName(),BlockChainAutoConstant.MSP_CA_NAME, BlockChainFabricImagesConstant.getFabricCaImage(bcCluster.getClusterVersion()),command);
                     //启动TLS的根CA服务器
-                    HyperledgerFabricComponentsStartUtils.setupCa(bcCluster.getClusterName(),BlockChainAutoConstant.TLS_CA_NAME, BlockChainFabricImagesConstant.getFabricCaImage(bcCluster.getClusterVersion()),command);
+                    HyperledgerFabricComponentsStartUtils.startHyperledgerFabricCaServer(bcCluster.getClusterName(),BlockChainAutoConstant.TLS_CA_NAME, BlockChainFabricImagesConstant.getFabricCaImage(bcCluster.getClusterVersion()),command);
                     //如果最终检查ca的服务器都没有启动的话，就抛出异常
                     if(!K8SUtils.checkPodStatus(bcCluster.getClusterName())){
                         logger.error("[async->cluster] create blockchain's cluster, check ca server status pod error, make sure ca server start is success, namespace name is :{}",bcCluster.getClusterName());
@@ -76,6 +64,8 @@ public class BlockChainNetworkClusterListener implements BlockChainListener{
                     //Orderer组织的参数在创建集群的时候应该确定
                     //创建集群的时候，需要默认的创建Orderer组织,Orderer组织不需要用户手动创建
                     //添加以下Orderer组织相关的参数
+
+                    //通过SpringBeanUtil获取spring的service对象
                     OrgService orgService = SpringBeanUtil.getBean(OrgService.class);
                     JSONObject ordererJsonObject = new JSONObject();
                     ordererJsonObject.put("clusterId",bcCluster.getId());

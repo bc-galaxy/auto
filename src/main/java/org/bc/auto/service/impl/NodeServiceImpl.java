@@ -39,64 +39,64 @@ public class NodeServiceImpl implements NodeService {
     }
 
     public BlockChainNodeList createNode(JSONArray jsonArray)throws BaseRuntimeException {
-        //假如列表中有节点元素
-        if(ValidatorUtils.isGreaterThanZero(jsonArray.size())){
 
-            //定义节点对象集合
-            List<BCNode> bcNodeInsertList = new ArrayList<>();
+        //确认传入的节点列表是非空集合
+        ValidatorUtils.isNotNull(jsonArray,ValidatorResultCode.VALIDATOR_NODE_ARRAY_ERROR);
 
-            BlockChainNodeList bcNodeBlockChainArrayList = new BlockChainNodeList<BCNode>();
+        //定义节点对象集合
+        List<BCNode> bcNodeInsertList = new ArrayList<>();
+        //定义事件监听的返回对象
+        BlockChainNodeList bcNodeBlockChainArrayList = new BlockChainNodeList<BCNode>();
 
             //对元素进行循环处理
-            for(int i=0;i<jsonArray.size();i++){
-                //取出列表中的节点元素
-                JSONObject jsonObject = jsonArray.getJSONObject(i);
+        for(int i=0;i<jsonArray.size();i++){
+            //取出列表中的节点元素
+            JSONObject jsonObject = jsonArray.getJSONObject(i);
 
-                String clusterId = jsonObject.getString("clusterId");
-                ValidatorUtils.isNotNull(clusterId, ValidatorResultCode.VALIDATOR_CLUSTER_ID_NULL);
-                logger.debug("[node->create] 创建节点，获取的集群编号信息为:{}",clusterId);
-
-                String nodeName = jsonObject.getString("nodeName");
-                ValidatorUtils.isNotNull(nodeName, ValidatorResultCode.VALIDATOR_NODE_NAME_NULL);
-                //判断节点名称是否匹配
-                if(!ValidatorUtils.isMatches(nodeName,ValidatorUtils.FABRIC_PEER_NAME_REGEX)){
-                    logger.error("[node->create] 创建节点，节点名称错误，获取到的节点名称为:{}",nodeName);
-                    throw new ValidatorException(ValidatorResultCode.VALIDATOR_NODE_NAME_NOT_MATCH);
-                }
-                logger.info("[node->create] 创建节点，获取的节点名称信息为:{}",nodeName);
-                //检查节点是否存在
-                List<BCNode> bcNodeList = bcNodeMapper.getNodeByNodeNameAndCluster(nodeName,clusterId);
-                if(!ValidatorUtils.isNull(bcNodeList)){
-                    logger.warn("[node->create] 创建区块链集群，节点名'{}'已存在",nodeName);
-                    throw new ValidatorException(ValidatorResultCode.VALIDATOR_NODE_NAME_RE);
-                }
-
-                int nodeType = jsonObject.getIntValue("nodeType");
-                String orgId = jsonObject.getString("orgId");
-
-                BCNode bcNode = new BCNode();
-                bcNode.setId(StringUtils.getId());
-                bcNode.setNodeName(nodeName);
-                bcNode.setClusterId(clusterId);
-                bcNode.setOrgId(orgId);
-                bcNode.setNodeType(nodeType);
-                bcNode.setOrgName(jsonObject.getString("orgName"));
-                bcNode.setCreateTime(DateUtils.getCurrentMillisTimeStamp());
-
-                bcNodeInsertList.add(bcNode);
+            //获取集群编号，该节点属于哪个网络下。
+            String clusterId = jsonObject.getString("clusterId");
+            ValidatorUtils.isNotNull(clusterId, ValidatorResultCode.VALIDATOR_CLUSTER_ID_NULL);
+            logger.debug("[node->create] create blockchain's node，get the cluster id is:{}",clusterId);
+            //获取创建的节点名称。
+            String nodeName = jsonObject.getString("nodeName");
+            ValidatorUtils.isNotNull(nodeName, ValidatorResultCode.VALIDATOR_NODE_NAME_NULL);
+            //判断节点名称是否匹配
+            if(!ValidatorUtils.isMatches(nodeName,ValidatorUtils.FABRIC_PEER_NAME_REGEX)){
+                logger.error("[node->create] create blockchain's node，node name error，make sure node name '{}' accord with naming convention",nodeName);
+                throw new ValidatorException(ValidatorResultCode.VALIDATOR_NODE_NAME_NOT_MATCH);
             }
-            int nodeResult = bcNodeMapper.insertNodeList(bcNodeInsertList);
-            //如果集群成功入库
-            if(!ValidatorUtils.isGreaterThanZero(nodeResult)){
-                logger.error("[node->create] 创建节点，插入数据库失败，请确认。");
-                throw new ValidatorException(ValidatorResultCode.VALIDATOR_NODE_INSERT_ERROR);
+            logger.debug("[node->create] create blockchain's node，get the node name is:{}",nodeName);
+            //检查节点是否存在
+            List<BCNode> bcNodeList = bcNodeMapper.getNodeByNodeNameAndCluster(nodeName,clusterId);
+            if(!ValidatorUtils.isNull(bcNodeList)){
+                logger.error("[org->create] create blockchain's node，make sure node name '{}' is not exists",nodeName);
+                throw new ValidatorException(ValidatorResultCode.VALIDATOR_NODE_NAME_RE);
             }
 
-            bcNodeBlockChainArrayList.seteList(bcNodeInsertList);
+            int nodeType = jsonObject.getIntValue("nodeType");
+            String orgId = jsonObject.getString("orgId");
+            logger.info("[node->create] create blockchain's node, get the node name is :{},cluster id is :{}, org id is :{}",
+                    nodeName, clusterId, orgId);
+            BCNode bcNode = new BCNode();
+            bcNode.setId(StringUtils.getId());
+            bcNode.setNodeName(nodeName);
+            bcNode.setClusterId(clusterId);
+            bcNode.setOrgId(orgId);
+            bcNode.setNodeType(nodeType);
+            bcNode.setOrgName(jsonObject.getString("orgName"));
+            bcNode.setCreateTime(DateUtils.getCurrentMillisTimeStamp());
 
-            return bcNodeBlockChainArrayList;
+            bcNodeInsertList.add(bcNode);
         }
-        return null;
+        int nodeResult = bcNodeMapper.insertNodeList(bcNodeInsertList);
+        //如果集群成功入库
+        if(!ValidatorUtils.isGreaterThanZero(nodeResult)){
+            logger.error("[node->create] create blockchain's node，insert database error.");
+            throw new ValidatorException(ValidatorResultCode.VALIDATOR_NODE_INSERT_ERROR);
+        }
+
+        bcNodeBlockChainArrayList.seteList(bcNodeInsertList);
+        return bcNodeBlockChainArrayList;
     }
 
     public int updateNode(BCNode bcNode)throws BaseRuntimeException{

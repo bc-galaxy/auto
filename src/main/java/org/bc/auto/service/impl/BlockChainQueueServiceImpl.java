@@ -49,19 +49,23 @@ public class BlockChainQueueServiceImpl implements BlockChainQueueService {
     }
 
     public void run(){
+        //开始轮询等待任务加入任务队列
         while(true){
             BlockChainNetwork blockChainNetwork = null;
             try{
+                //获取队列中的元素
                 blockChainNetwork = BlockChainShellQueueUtils.peek();
             }catch (InterruptedException e){
-                logger.info("[queue->exception] 队列获取元素异常，程序可能已经崩溃。异常信息:{}",e.getMessage());
+                logger.info("[queue->exception] get the element error from shell queue，maybe system exception. please check it. exception info: \n",e);
             }
 
+            //获取队列中元素的对象类型
+            //根据元素中的对象类型进行相对应的业务处理
             String className = BlockChainShellQueueUtils.getElementClassName(blockChainNetwork);
             switch (className){
                 //如果是组织的类型，进行组织的脚本执行
                 case "BCOrg" : {
-                    logger.info("[queue->org] 执行创建组织脚本");
+                    logger.debug("[queue->org] element's type is org，this is to get the org cert.");
                     //获取集群对象，以获取更多的集群信息
                     //并对返回的结果进行判断
                     BCOrg bcOrg = (BCOrg) blockChainNetwork;
