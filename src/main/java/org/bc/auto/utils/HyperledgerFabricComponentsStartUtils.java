@@ -248,6 +248,14 @@ public class HyperledgerFabricComponentsStartUtils {
                 bcCert.setCertType(3);
                 logger.info("[shell->cert] shell to get org cert success: {}user ca certs path is '{}',{}user msp certs public key path is '{}',{}user msp certs private key path is '{}',{}user tls certs public key path is '{}',{}user tls certs private key path is '{}'{}."
                         ,System.lineSeparator(),certUserCaCert,System.lineSeparator(),certUserPubKey,System.lineSeparator(),certUserPriKey,System.lineSeparator(),certTlsPubKey,System.lineSeparator(),certTlsPriKey,System.lineSeparator());
+
+                // 为新增组织生成configtx.yaml
+                String orgMspDir = "../../../crypto-config/peerOrganizations/" + bcOrg.getOrgName().toLowerCase() + "-" + clusterName + "/msp";
+                String yamlFilePath = BlockChainK8SConstant.getSavePath()+ File.separator + clusterName + File.separator + "channels" + File.separator + clusterName + File.separator + bcOrg.getOrgName().toLowerCase() + File.separator + "configtx.yaml";
+                if (!ConfigTxUtils.generateOrgConfigTxYaml(bcOrg.getOrgName(), bcOrg.getOrgMspId(), orgMspDir, yamlFilePath)) {
+                    throw new K8SException();
+                }
+
                 // 将组织MSP动态添加至系统通道内
                 if (!ShellUtils.exec(scriptsPath + ADD_ORG_TO_SYS_CHANNEL, clusterName, bcOrg.getOrgName(), "Orderer", "orderer0", BlockChainK8SConstant.getFabricToolsPath(bcCluster.getClusterVersion()), BlockChainK8SConstant.getFabricOperateScriptsPath(), BlockChainK8SConstant.getSavePath())) {
                     logger.error("[shell->cert] shell to add org in fabric system channel, add org error, org name is :{}, cluster name is :{}",bcOrg.getOrgName(), clusterName);
