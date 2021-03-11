@@ -339,7 +339,7 @@ public class HyperledgerFabricComponentsStartUtils {
             case 3:
                 for (int i = 0; i < bcCluster.getOrdererCount(); i++) {
                     // 准备ordererAddressList
-                    ordererAddressList.add("orderer" + i + "." + bcCluster.getClusterName() + ":" + ordererNodePorts.get("orderer" + i));
+                    ordererAddressList.add("orderer" + i + "." + bcCluster.getClusterName() + ":" + 7050);
                     // 准备raftConsensus
                     Map<String, Object> consensus = new LinkedHashMap<>();
                     consensus.put("Host", "orderer" + i + "." + bcCluster.getClusterName());
