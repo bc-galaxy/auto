@@ -80,11 +80,11 @@ public class BlockChainQueueServiceImpl implements BlockChainQueueService {
                     break;
                 }
                 case "BlockChainNodeList" : {
-                    logger.info("[queue->node] 执行创建节点脚本");
-
+                    logger.debug("[queue->node] element's type is node，this is to get the node cert.");
                     BlockChainNodeList<BCNode> bcNodeBlockChainArrayList = (BlockChainNodeList<BCNode>) blockChainNetwork;
                     List<BCNode> bcNodeList = bcNodeBlockChainArrayList.geteList();
                     //为节点申请节点证书
+                    //节点证书需要进行托管，节点证书要进行节点连接等操作。
                     for(int i=0;i<bcNodeList.size();i++){
                         BCNode bcNode = bcNodeList.get(i);
                         //节点开始的时候生成证书
@@ -95,6 +95,7 @@ public class BlockChainQueueServiceImpl implements BlockChainQueueService {
                     //监听节点事件，如果是orderer节点的情况下。
                     //需要创建创世区块等文件
                     if(bcNodeList.get(0).getNodeType() == 1){
+                        logger.debug("[queue->node] element's type is node and node type is orderer，need to create genesis.block file");
                         BCCluster bcCluster = bcClusterMapper.getClusterById(bcNodeList.get(0).getClusterId());
                         BCOrg bcOrg =orgService.getOrgByOrgId(bcNodeList.get(0).getOrgId());
                         HyperledgerFabricComponentsStartUtils.buildFabricChain(bcCluster,bcOrg);
@@ -105,8 +106,8 @@ public class BlockChainQueueServiceImpl implements BlockChainQueueService {
                         BCNode bcNode = bcNodeList.get(i);
                         //通知K8S启动对应的pod节点,发布监听
                         new BlockChainEven(new BlockChainFabricNodeListener(),bcNode).doEven();
+                        logger.info("[queue->node] element's type is node，start node pod success, node name is:{}",bcNode.getNodeName());
                     }
-
                     break;
                 }
                 case "BCChannel" : {
