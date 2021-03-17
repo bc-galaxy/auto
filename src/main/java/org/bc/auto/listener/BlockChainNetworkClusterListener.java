@@ -10,9 +10,10 @@ import org.bc.auto.config.BlockChainFabricImagesConstant;
 import org.bc.auto.config.BlockChainK8SConstant;
 import org.bc.auto.exception.K8SException;
 import org.bc.auto.exception.ValidatorException;
+import org.bc.auto.listener.source.BlockChainFabricClusterEventSource;
 import org.bc.auto.model.entity.BCCluster;
 import org.bc.auto.model.entity.BCOrg;
-import org.bc.auto.model.entity.BlockChainNodeList;
+import org.bc.auto.listener.source.BlockChainFabricNodeEventSource;
 import org.bc.auto.service.NodeService;
 import org.bc.auto.service.OrgService;
 import org.bc.auto.utils.*;
@@ -24,13 +25,14 @@ public class BlockChainNetworkClusterListener implements BlockChainListener{
     private static final Logger logger = LoggerFactory.getLogger(BlockChainNetworkClusterListener.class);
 
     @Override
-    public void doEven(BlockChainEven blockChainEven) {
+    public void doEven(BlockChainEvent blockChainEven) {
         ThreadPoolManager.newInstance().addExecuteTask(new Runnable() {
             @Override
             public void run() {
                 try{
                     //获取需要创建的集群对象
-                    BCCluster bcCluster = (BCCluster)blockChainEven.getBlockChainNetwork();
+                    BlockChainFabricClusterEventSource blockChainFabricClusterEventSource =  (BlockChainFabricClusterEventSource)blockChainEven.getBlockChainEventSource();
+                    BCCluster bcCluster = blockChainFabricClusterEventSource.getBcCluster();
                     //创建集群对应的pv,目前支持nfs的方式。
                     //规则："集群名称"+"-pv"
                     K8SUtils.createPersistentVolume(BlockChainK8SConstant.getK8sPvName(bcCluster.getClusterName()), BlockChainAutoConstant.NFS_HOST,BlockChainAutoConstant.NFS_PATH,"100Mi");
@@ -98,7 +100,7 @@ public class BlockChainNetworkClusterListener implements BlockChainListener{
                         logger.debug("[async->cluster] create blockchain's cluster, default to create Orderer's node, cluster name is :{},node name is :{}, node type is :{}",
                                 bcCluster.getClusterName(),"orderer"+i,1);
                     }
-                    BlockChainNodeList blockChainNodeList = nodeService.createNode(jsonArray);
+                    BlockChainFabricNodeEventSource blockChainNodeList = nodeService.createNode(jsonArray);
                     boolean flag = BlockChainShellQueueUtils.add(blockChainNodeList);
                     logger.info("[async->cluster] create blockchain's cluster, default to create Orderer's node success, cluster name is :{},node count is :{}, node type is :{}",
                             bcCluster.getClusterName(),bcCluster.getOrdererCount(),1);

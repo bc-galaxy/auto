@@ -1,6 +1,6 @@
 package org.bc.auto.utils;
 
-import org.bc.auto.model.entity.BlockChainNetwork;
+import org.bc.auto.listener.source.BlockChainEventSource;
 
 import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -8,9 +8,9 @@ import java.util.concurrent.BlockingQueue;
 
 public class BlockChainShellQueueUtils {
 
-    private static final BlockingQueue<BlockChainNetwork> BLOCK_CHAIN_SHELL_QUEUE = new ArrayBlockingQueue(64);
+    private static final BlockingQueue<BlockChainEventSource> BLOCK_CHAIN_SHELL_QUEUE = new ArrayBlockingQueue(64);
 
-    public static boolean add(BlockChainNetwork blockChainNetwork){
+    public static boolean add(BlockChainEventSource blockChainNetwork){
         boolean flag = BLOCK_CHAIN_SHELL_QUEUE.offer(blockChainNetwork);
 
         return flag;
@@ -28,7 +28,7 @@ public class BlockChainShellQueueUtils {
      * @return
      * @throws Exception
      */
-    public static BlockChainNetwork peek()throws InterruptedException{
+    public static BlockChainEventSource peek()throws InterruptedException{
         return BLOCK_CHAIN_SHELL_QUEUE.take();
     }
 
@@ -36,7 +36,7 @@ public class BlockChainShellQueueUtils {
         return BLOCK_CHAIN_SHELL_QUEUE.size();
     }
 
-    public static String getElementClassName(BlockChainNetwork blockChainNetwork){
+    public static String getElementClassName(BlockChainEventSource blockChainNetwork){
         String className = blockChainNetwork.getClass().getName();
         int beginIndex = className.lastIndexOf(".");
         beginIndex = beginIndex+1;

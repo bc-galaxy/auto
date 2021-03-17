@@ -1,8 +1,10 @@
 package org.bc.auto.model.entity;
 
+import org.bc.auto.listener.source.BlockChainEventSource;
+
 import java.io.Serializable;
 
-public class BCNode implements Serializable,BlockChainNetwork {
+public class BCNode implements Serializable {
     private static final long serialVersionUID = -1257130671388672087L;
 
     private String id;

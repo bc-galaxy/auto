@@ -17,6 +17,8 @@ public interface BCNodeMapper {
 
     List<BCNode> getNodeByNodeName(@Param(value = "nodeName") String nodeName);
 
-    List<BCNode> getNodeByNodeNameAndCluster(@Param(value = "nodeName") String orgName,@Param(value = "clusterId") String clusterId);
+    List<BCNode> getNodeByNodeNameAndCluster(@Param(value = "nodeName") String nodeName,@Param(value = "clusterId") String clusterId);
+
+    List<BCNode> getNodeByNodeTypeAndCluster(@Param(value = "nodeType") int nodeType,@Param(value = "clusterId") String clusterId);
 
 }

@@ -1,8 +1,10 @@
 package org.bc.auto.model.entity;
 
+import org.bc.auto.listener.source.BlockChainEventSource;
+
 import java.io.Serializable;
 
-public class BCOrg implements Serializable,BlockChainNetwork {
+public class BCOrg implements Serializable {
 
     private static final long serialVersionUID = 5376058759633491230L;
 

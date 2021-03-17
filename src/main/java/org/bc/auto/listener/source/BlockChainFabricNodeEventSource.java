@@ -1,9 +1,10 @@
-package org.bc.auto.model.entity;
+package org.bc.auto.listener.source;
 
-import java.util.ArrayList;
+import org.bc.auto.listener.source.BlockChainEventSource;
+
 import java.util.List;
 
-public class BlockChainNodeList<E> implements BlockChainNetwork {
+public class BlockChainFabricNodeEventSource<E> implements BlockChainEventSource {
 
     private List<E> eList;
 

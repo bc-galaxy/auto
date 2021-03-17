@@ -1,10 +1,12 @@
 package org.bc.auto.service.impl;
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
 import org.bc.auto.dao.BCClusterMapper;
-import org.bc.auto.listener.BlockChainEven;
+import org.bc.auto.listener.BlockChainEvent;
 import org.bc.auto.listener.BlockChainFabricNodeListener;
+import org.bc.auto.listener.source.BlockChainEventSource;
+import org.bc.auto.listener.source.BlockChainFabricChannelEventSource;
+import org.bc.auto.listener.source.BlockChainFabricNodeEventSource;
+import org.bc.auto.listener.source.BlockChainFabricOrgEventSource;
 import org.bc.auto.model.entity.*;
 import org.bc.auto.service.BlockChainQueueService;
 import org.bc.auto.service.CertService;
@@ -18,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Random;
 
 @Service
 public class BlockChainQueueServiceImpl implements BlockChainQueueService {
@@ -51,24 +54,25 @@ public class BlockChainQueueServiceImpl implements BlockChainQueueService {
     public void run(){
         //开始轮询等待任务加入任务队列
         while(true){
-            BlockChainNetwork blockChainNetwork = null;
+            BlockChainEventSource blockChainEventSource = null;
             try{
                 //获取队列中的元素
-                blockChainNetwork = BlockChainShellQueueUtils.peek();
+                blockChainEventSource = BlockChainShellQueueUtils.peek();
             }catch (InterruptedException e){
                 logger.info("[queue->exception] get the element error from shell queue，maybe system exception. please check it. exception info: \n",e);
             }
 
             //获取队列中元素的对象类型
             //根据元素中的对象类型进行相对应的业务处理
-            String className = BlockChainShellQueueUtils.getElementClassName(blockChainNetwork);
+            String className = BlockChainShellQueueUtils.getElementClassName(blockChainEventSource);
             switch (className){
                 //如果是组织的类型，进行组织的脚本执行
-                case "BCOrg" : {
+                case "BlockChainFabricOrgEventSource" : {
                     logger.debug("[queue->org] element's type is org，this is to get the org cert.");
                     //获取集群对象，以获取更多的集群信息
                     //并对返回的结果进行判断
-                    BCOrg bcOrg = (BCOrg) blockChainNetwork;
+                    BlockChainFabricOrgEventSource chainFabricOrgEventSource = (BlockChainFabricOrgEventSource) blockChainEventSource;
+                    BCOrg bcOrg = chainFabricOrgEventSource.getBcOrg();
                     BCCluster bcCluster = bcClusterMapper.getClusterById(bcOrg.getClusterId());
                     BCCert bcCert = HyperledgerFabricComponentsStartUtils.generateOrgCerts(bcCluster, bcOrg);
                     //如果成功申请则进行组织的状态修改，并入库。
@@ -79,9 +83,9 @@ public class BlockChainQueueServiceImpl implements BlockChainQueueService {
                     certService.insertBCCert(bcCert);
                     break;
                 }
-                case "BlockChainNodeList" : {
+                case "BlockChainFabricNodeEventSource" : {
                     logger.debug("[queue->node] element's type is node，this is to get the node cert.");
-                    BlockChainNodeList<BCNode> bcNodeBlockChainArrayList = (BlockChainNodeList<BCNode>) blockChainNetwork;
+                    BlockChainFabricNodeEventSource<BCNode> bcNodeBlockChainArrayList = (BlockChainFabricNodeEventSource<BCNode>) blockChainEventSource;
                     List<BCNode> bcNodeList = bcNodeBlockChainArrayList.geteList();
                     //为节点申请节点证书
                     //节点证书需要进行托管，节点证书要进行节点连接等操作。
@@ -102,21 +106,23 @@ public class BlockChainQueueServiceImpl implements BlockChainQueueService {
                     }
 
                     //启动节点
-                    for(int i=0;i<bcNodeList.size();i++){
-                        BCNode bcNode = bcNodeList.get(i);
-                        //通知K8S启动对应的pod节点,发布监听
-                        new BlockChainEven(new BlockChainFabricNodeListener(),bcNode).doEven();
-                        logger.info("[queue->node] element's type is node，start node pod success, node name is:{}",bcNode.getNodeName());
-                    }
+                    //通知K8S启动对应的pod节点,发布监听
+                    new BlockChainEvent(new BlockChainFabricNodeListener(),bcNodeBlockChainArrayList).doEven();
+                    logger.info("[queue->node] element's type is node，start node pod success");
                     break;
                 }
-                case "BCChannel" : {
+                case "BlockChainFabricChannelEventSource" : {
                     logger.info("[queue->channel] 执行创建通道脚本");
                     //获取集群对象，以获取更多的集群信息
                     //并对返回的结果进行判断
-                    BCChannel bcChannel = (BCChannel) blockChainNetwork;
-                    BCCluster bcCluster = bcClusterMapper.getClusterById(bcChannel.getClusterId());
+                    BlockChainFabricChannelEventSource blockChainFabricChannelEventSource = (BlockChainFabricChannelEventSource) blockChainEventSource;
+                    BCChannel bcChannel = blockChainFabricChannelEventSource.getBcChannel();
+                    //获取所有的orderer列表
+                    List<BCNode> bcNodeList = nodeService.getNodeByNodeTypeAndCluster(1,blockChainFabricChannelEventSource.getBcCluster().getId());
+                    BCNode ordererNode =bcNodeList.get(new Random().nextInt(bcNodeList.size()));
                     //执行创建通道脚本
+                    //生成通道的通道的配置文件
+                    HyperledgerFabricComponentsStartUtils.buildFabricChannel(blockChainFabricChannelEventSource.getBcCluster(),blockChainFabricChannelEventSource.getOrgNames(),ordererNode,blockChainFabricChannelEventSource.getBcChannel());
 
                     break;
                 }

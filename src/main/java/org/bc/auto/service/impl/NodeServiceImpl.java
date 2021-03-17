@@ -7,9 +7,8 @@ import org.bc.auto.dao.BCClusterMapper;
 import org.bc.auto.dao.BCNodeMapper;
 import org.bc.auto.exception.BaseRuntimeException;
 import org.bc.auto.exception.ValidatorException;
-import org.bc.auto.model.entity.BCCluster;
 import org.bc.auto.model.entity.BCNode;
-import org.bc.auto.model.entity.BlockChainNodeList;
+import org.bc.auto.listener.source.BlockChainFabricNodeEventSource;
 import org.bc.auto.service.NodeService;
 import org.bc.auto.utils.*;
 import org.slf4j.Logger;
@@ -38,7 +37,7 @@ public class NodeServiceImpl implements NodeService {
         this.bcClusterMapper = bcClusterMapper;
     }
 
-    public BlockChainNodeList createNode(JSONArray jsonArray)throws BaseRuntimeException {
+    public BlockChainFabricNodeEventSource createNode(JSONArray jsonArray)throws BaseRuntimeException {
 
         //确认传入的节点列表是非空集合
         ValidatorUtils.isNotNull(jsonArray,ValidatorResultCode.VALIDATOR_NODE_ARRAY_ERROR);
@@ -46,7 +45,7 @@ public class NodeServiceImpl implements NodeService {
         //定义节点对象集合
         List<BCNode> bcNodeInsertList = new ArrayList<>();
         //定义事件监听的返回对象
-        BlockChainNodeList bcNodeBlockChainArrayList = new BlockChainNodeList<BCNode>();
+        BlockChainFabricNodeEventSource bcNodeBlockChainArrayList = new BlockChainFabricNodeEventSource<BCNode>();
 
             //对元素进行循环处理
         for(int i=0;i<jsonArray.size();i++){
@@ -103,4 +102,8 @@ public class NodeServiceImpl implements NodeService {
         return bcNodeMapper.updateNode(bcNode);
     }
 
+    @Override
+    public List<BCNode> getNodeByNodeTypeAndCluster(int nodeType, String clusterId) {
+        return bcNodeMapper.getNodeByNodeTypeAndCluster(nodeType,clusterId);
+    }
 }

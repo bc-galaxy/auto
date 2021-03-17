@@ -36,6 +36,7 @@ public enum ValidatorResultCode  implements ResultCode {
     VALIDATOR_CHANNEL_NAME_NOT_MATCH(10023,"通道名称不符合规则，请确定"),
     VALIDATOR_CHANNEL_QUEUE_ERROR(10024,"通道任务加入队列失败"),
     VALIDATOR_NODE_ARRAY_ERROR(10025,"节点列表为空"),
+    VALIDATOR_CHANNEL_NAME_NULL(10026,"通道名称为空，请确定"),
     ;
 
     private int code;

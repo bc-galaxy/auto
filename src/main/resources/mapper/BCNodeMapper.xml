@@ -48,6 +48,12 @@
         from bc_node where node_name = #{nodeName} and cluster_id=#{clusterId};
     </select>
 
+    <select id="getNodeByNodeTypeAndCluster" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from bc_node where node_type = #{nodeType} and cluster_id=#{clusterId};
+    </select>
+
     <update id="updateNode" parameterType="org.bc.auto.model.entity.BCNode">
         UPDATE bc_node
         <set>

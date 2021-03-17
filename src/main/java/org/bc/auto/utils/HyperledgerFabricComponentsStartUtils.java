@@ -1,14 +1,13 @@
 package org.bc.auto.utils;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import io.kubernetes.client.custom.IntOrString;
 import io.kubernetes.client.openapi.models.*;
 import org.bc.auto.code.impl.K8SResultCode;
 import org.bc.auto.config.BlockChainK8SConstant;
 import org.bc.auto.exception.K8SException;
-import org.bc.auto.model.entity.BCCert;
-import org.bc.auto.model.entity.BCCluster;
-import org.bc.auto.model.entity.BCNode;
-import org.bc.auto.model.entity.BCOrg;
+import org.bc.auto.model.entity.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,6 +26,7 @@ public class HyperledgerFabricComponentsStartUtils {
     public static final String ADD_ORG_TO_SYS_CHANNEL = "add-org-to-syschannel.sh";
     public static final String GENERATE_GENESIS_SCRIPT_NAME = "generate-genesis.sh";
     public static final String COMMON_OPERATE_SCRIPT_NAME = "common-operate.sh";
+    public static final String CREATE_CHANNEL_SCRIPT_NAME = "create-channel.sh";
 
     public static final int PEER_PORT = 7051;
     public static final int PEER_CHAINCODE_PORT = 7052;
@@ -367,5 +367,31 @@ public class HyperledgerFabricComponentsStartUtils {
             logger.error("generate orderer genesis block by system channel -> {} error.", bcCluster.getClusterName());
             throw new K8SException();
         }
+    }
+
+    public static BCChannel buildFabricChannel(BCCluster bcCluster, List<String> orgNameList, BCNode ordererNode, BCChannel bcChannel){
+
+        // 生成configtx.yaml
+        JSONArray arr = new JSONArray();
+        for (int i = 0; i < orgNameList.size(); i++) {
+            String orgPeerName = orgNameList.get(i);
+            JSONObject jo = new JSONObject();
+            jo.put("orgName", orgPeerName);
+            jo.put("orgMspId", orgPeerName + "MSP");
+            jo.put("orgMspDir", "../../crypto-config/peerOrganizations/" + orgPeerName.toLowerCase() + "-" + bcCluster.getClusterName() + "/msp");
+            arr.add(jo);
+        }
+
+        // 从要创建通道的组织列表中随机选择一个组织名称
+        String createOrgNameRandom = orgNameList.get(new Random().nextInt(orgNameList.size()));
+
+        // 生成channel.tx 并创建通道
+        if (ShellUtils.exec(BlockChainK8SConstant.getFabricOperateScriptsPath() + CREATE_CHANNEL_SCRIPT_NAME, bcCluster.getClusterName(), bcChannel.getChannelName(), createOrgNameRandom, ordererNode.getNodeName(), BlockChainK8SConstant.getFabricToolsPath(bcCluster.getClusterVersion()), BlockChainK8SConstant.getFabricOperateScriptsPath(), BlockChainK8SConstant.getSavePath())) {
+            //返回channel对象
+            bcChannel.setChannelStatus(2);
+            return bcChannel;
+        }
+
+        return null;
     }
 }

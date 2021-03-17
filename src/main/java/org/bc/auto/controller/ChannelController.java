@@ -27,7 +27,7 @@ public class ChannelController {
     public Result createChain(@RequestBody JSONObject jsonObject) {
         logger.debug("[channel->create] 用户请求区块链create方法");
 
-//        clusterService.createCluster(jsonObject);
+        channelService.createChannel(jsonObject);
         return Result.success();
     }
 

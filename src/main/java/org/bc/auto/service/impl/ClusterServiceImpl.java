@@ -6,8 +6,9 @@ import org.bc.auto.dao.BCClusterInfoMapper;
 import org.bc.auto.dao.BCClusterMapper;
 import org.bc.auto.exception.BaseRuntimeException;
 import org.bc.auto.exception.ValidatorException;
-import org.bc.auto.listener.BlockChainEven;
+import org.bc.auto.listener.BlockChainEvent;
 import org.bc.auto.listener.BlockChainNetworkClusterListener;
+import org.bc.auto.listener.source.BlockChainFabricClusterEventSource;
 import org.bc.auto.model.entity.BCCluster;
 import org.bc.auto.model.entity.BCClusterInfo;
 import org.bc.auto.service.ClusterService;
@@ -97,9 +98,10 @@ public class ClusterServiceImpl implements ClusterService {
             logger.error("[cluster->create] create blockchain's cluster，insert database error.");
             throw new ValidatorException(ValidatorResultCode.VALIDATOR_CLUSTER_INSERT_ERROR);
         }
-
+        BlockChainFabricClusterEventSource blockChainFabricClusterEventSource = new BlockChainFabricClusterEventSource();
+        blockChainFabricClusterEventSource.setBcCluster(bcCluster);
         //触发监听事件，去创建集群
-        new BlockChainEven(new BlockChainNetworkClusterListener(),bcCluster).doEven();
+        new BlockChainEvent(new BlockChainNetworkClusterListener(),blockChainFabricClusterEventSource).doEven();
 
         //返回结果集
         return bcCluster;
