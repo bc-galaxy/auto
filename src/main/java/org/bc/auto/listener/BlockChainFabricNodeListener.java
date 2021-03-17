@@ -89,7 +89,7 @@ public class BlockChainFabricNodeListener implements BlockChainListener{
 
         final Map<String, String> labels = new HashMap<String, String>(4) {{
             put("namespace", fabricConstructVo.getNameSapce());
-            put("app", fabricConstructVo.getNodeName());
+            put("app", "auto-cluster");
             put("role", fabricConstructVo.getNodeK8sRole());
             put("orderer-name", fabricConstructVo.getNodeName());
         }};

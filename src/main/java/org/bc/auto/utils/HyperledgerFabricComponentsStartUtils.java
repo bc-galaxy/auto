@@ -304,12 +304,13 @@ public class HyperledgerFabricComponentsStartUtils {
             K8SUtils.createService(clusterName, ordererName, labels, svcSpec);
             logger.info("create service {} successful.", ordererName);
 
-            Integer nodePort = K8SUtils.queryNodePort(ordererName, clusterName);
-            if (nodePort <= 0) {
-                logger.error("query service -> {}'s node port from namespace -> {} error. it must be greater than 30000.", ordererName, clusterName);
-                throw new K8SException();
-            }
-            ordererNodePorts.put(ordererName, nodePort);
+//            Integer nodePort = K8SUtils.queryNodePort(ordererName, clusterName);
+//            if (nodePort <= 0) {
+//                logger.error("query service -> {}'s node port from namespace -> {} error. it must be greater than 30000.", ordererName, clusterName);
+//                throw new K8SException();
+//            }
+//            ordererNodePorts.put(ordererName, nodePort);
+            ordererNodePorts.put(ordererName, ORDERER_PORT);
         }
         return ordererNodePorts;
     }

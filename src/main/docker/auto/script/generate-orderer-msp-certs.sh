@@ -102,6 +102,11 @@ get_ca_cert() {
       rm -rf ${DOMAIN_MSP_PATH}/intermediatecerts/ca.$CLUSTER_NAME-cert.pem
       mv ${DOMAIN_MSP_PATH}/intermediatecerts/*.pem ${DOMAIN_MSP_PATH}/intermediatecerts/ca.$CLUSTER_NAME-cert.pem
    fi
+
+   #copy cert to data
+  mkdir -p $CRYPTO_PATH/$CLUSTER_NAME/msp/
+  cp -rf $DOMAIN_MSP_PATH/ $CRYPTO_PATH/$CLUSTER_NAME/
+
    log -n "Get ca cert done."
 }
 
@@ -128,6 +133,7 @@ enroll_admin_user() {
       rm -rf $ADMIN_MSP_PATH/user
       rm -rf $ADMIN_MSP_PATH/Issuer*
       cp -rf $ADMIN_MSP_PATH/signcerts/cert.pem $DOMAIN_MSP_PATH/admincerts/Admin@$CLUSTER_NAME-cert.pem
+      cp -rf $ADMIN_MSP_PATH/signcerts/cert.pem $CRYPTO_PATH/$CLUSTER_NAME/msp/admincerts
 
       cp -rf $ADMIN_MSP_PATH/signcerts/cert.pem $ADMIN_MSP_PATH/admincerts/Admin@$CLUSTER_NAME-cert.pem
       rm -rf $ADMIN_MSP_PATH/signcerts/Admin@$CLUSTER_NAME-cert.pem
@@ -140,8 +146,8 @@ enroll_admin_user() {
       fi
 
       #copy cert to data
-      mkdir -p $CRYPTO_PATH/users/Admin@$CLUSTER_NAME/msp
-      cp -rf $ADMIN_MSP_PATH $CRYPTO_PATH/users/Admin@$CLUSTER_NAME/msp
+      mkdir -p $CRYPTO_PATH/$CLUSTER_NAME/users/Admin@$CLUSTER_NAME
+      cp -rf $ADMIN_MSP_PATH $CRYPTO_PATH/$CLUSTER_NAME/users/Admin@$CLUSTER_NAME
 
    fi
    log -n "Enroll admin user done."
@@ -180,8 +186,8 @@ enroll_orderer() {
       fi
 
       #copy cert to data
-      mkdir -p $CRYPTO_PATH/orderers/$ORDERER.$CLUSTER_NAME/msp
-      cp -rf $ORDERER_MSP_PATH $CRYPTO_PATH/orderers/$ORDERER.$CLUSTER_NAME/msp
+      mkdir -p $CRYPTO_PATH/$CLUSTER_NAME/orderers/$ORDERER.$CLUSTER_NAME
+      cp -rf $ORDERER_MSP_PATH $CRYPTO_PATH/$CLUSTER_NAME/orderers/$ORDERER.$CLUSTER_NAME
    fi
    log -n "Enroll orderer done."
 }
@@ -191,6 +197,8 @@ copy_certs_to_crypto_config_dir() {
    CRYPTO_PATH="$SAVE_CERTS_ROOT_PATH/$CLUSTER_NAME/crypto-config/ordererOrganizations"
    if [ ! -d $CRYPTO_PATH ]; then
       mkdir -p ${CRYPTO_PATH}
+   else
+      rm -rf $CRYPTO_PATH/*
    fi
    cp -rf $ROOTPATH/$CLUSTER_NAME/ $CRYPTO_PATH
    log -n "Copy certs done."
@@ -204,11 +212,11 @@ if [ $OPERATE_TYPE = "ordererOrg" ]; then
    get_ca_cert
    register_admin_user
    enroll_admin_user
-   copy_certs_to_crypto_config_dir
+#   copy_certs_to_crypto_config_dir
 elif [ $OPERATE_TYPE = "orderer" ]; then
    register_orderer
    enroll_orderer
-   copy_certs_to_crypto_config_dir
+#   copy_certs_to_crypto_config_dir
 else
    log -n "Operate type error."
    exit 1
