@@ -100,8 +100,7 @@ public class BlockChainNetworkClusterListener implements BlockChainListener{
                         logger.debug("[async->cluster] create blockchain's cluster, default to create Orderer's node, cluster name is :{},node name is :{}, node type is :{}",
                                 bcCluster.getClusterName(),"orderer"+i,1);
                     }
-                    BlockChainFabricNodeEventSource blockChainNodeList = nodeService.createNode(jsonArray);
-                    boolean flag = BlockChainShellQueueUtils.add(blockChainNodeList);
+                    boolean flag = nodeService.createNode(jsonArray);
                     logger.info("[async->cluster] create blockchain's cluster, default to create Orderer's node success, cluster name is :{},node count is :{}, node type is :{}",
                             bcCluster.getClusterName(),bcCluster.getOrdererCount(),1);
                     if(!flag){

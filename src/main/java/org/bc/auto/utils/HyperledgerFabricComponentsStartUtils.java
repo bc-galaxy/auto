@@ -27,6 +27,7 @@ public class HyperledgerFabricComponentsStartUtils {
     public static final String GENERATE_GENESIS_SCRIPT_NAME = "generate-genesis.sh";
     public static final String COMMON_OPERATE_SCRIPT_NAME = "common-operate.sh";
     public static final String CREATE_CHANNEL_SCRIPT_NAME = "create-channel.sh";
+    public static final String JOIN_CHANNEL_SCRIPT_NAME = "join-channel.sh";
 
     public static final int PEER_PORT = 7051;
     public static final int PEER_CHAINCODE_PORT = 7052;
@@ -393,5 +394,34 @@ public class HyperledgerFabricComponentsStartUtils {
         }
 
         return null;
+    }
+
+
+    public static void nodeJoinFabricChannel(JSONArray jsonArray){
+        for(int i=0;i<jsonArray.size();i++){
+            JSONObject jsonObject = jsonArray.getJSONObject(i);
+
+            String clusterName = jsonObject.getString("clusterName");
+            String peerName = jsonObject.getString("peerName");
+
+            //K8S进行pods检测
+            if(!K8SUtils.checkStatus("podName",clusterName,peerName)){
+
+                String channelName = jsonObject.getString("channelName");
+                String orgName = jsonObject.getString("orgName");
+                String ordererOrgName = jsonObject.getString("ordererOrgName");
+                String ordererName = jsonObject.getString("ordererName");
+                String clusterVersion = jsonObject.getString("clusterVersion");
+
+                if (!ShellUtils.exec(BlockChainK8SConstant.getFabricOperateScriptsPath() + JOIN_CHANNEL_SCRIPT_NAME, clusterName, channelName, orgName, peerName, PEER_PORT + "", ordererOrgName, ordererName, BlockChainK8SConstant.getFabricToolsPath(clusterVersion), BlockChainK8SConstant.getFabricOperateScriptsPath(), BlockChainK8SConstant.getSavePath())) {
+                    logger.error("peer -> {} join channel -> {} error.", peerName, channelName);
+                    throw new K8SException();
+                }
+
+            }else{
+
+                break;
+            }
+        }
     }
 }

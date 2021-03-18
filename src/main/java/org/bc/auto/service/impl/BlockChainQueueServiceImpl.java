@@ -1,12 +1,10 @@
 package org.bc.auto.service.impl;
 
+import com.alibaba.fastjson.JSONArray;
 import org.bc.auto.dao.BCClusterMapper;
 import org.bc.auto.listener.BlockChainEvent;
 import org.bc.auto.listener.BlockChainFabricNodeListener;
-import org.bc.auto.listener.source.BlockChainEventSource;
-import org.bc.auto.listener.source.BlockChainFabricChannelEventSource;
-import org.bc.auto.listener.source.BlockChainFabricNodeEventSource;
-import org.bc.auto.listener.source.BlockChainFabricOrgEventSource;
+import org.bc.auto.listener.source.*;
 import org.bc.auto.model.entity.*;
 import org.bc.auto.service.BlockChainQueueService;
 import org.bc.auto.service.CertService;
@@ -126,8 +124,11 @@ public class BlockChainQueueServiceImpl implements BlockChainQueueService {
 
                     break;
                 }
-                case "BCCert" :
-                    logger.info("[queue->cert] 执行创建节点脚本");
+                case "BlockChainFabricJoinChannelEventSource" :
+                    logger.info("[queue->join] 执行加入节点脚本");
+                    BlockChainFabricJoinChannelEventSource blockChainFabricJoinChannelEventSource = (BlockChainFabricJoinChannelEventSource) blockChainEventSource;
+                    JSONArray jsonArray = blockChainFabricJoinChannelEventSource.getJsonArray();
+                    HyperledgerFabricComponentsStartUtils.nodeJoinFabricChannel(jsonArray);
                     break;
                 default:
 
