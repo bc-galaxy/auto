@@ -37,7 +37,8 @@ public class BlockChainFabricImagesConstant {
      *
      * 注意：Fabric的ca镜像为重新打包的镜像。指定了默认的启动命令、以及配置文件，方便K8S启动ca命令。
      */
-    private final static String FABRIC_CA_IMAGE=String.join("/",FABRIC_IMAGE_PREFIX,"fabric-ca-ml:{0}");
+//    private final static String FABRIC_CA_IMAGE=String.join("/",FABRIC_IMAGE_PREFIX,"fabric-ca-ml:{0}");
+    private final static String FABRIC_CA_IMAGE=String.join("/",FABRIC_IMAGE_PREFIX,"fabric-ca:{0}");
 
     /**
      * 确定fabric区块链组件couchdb的镜像名称

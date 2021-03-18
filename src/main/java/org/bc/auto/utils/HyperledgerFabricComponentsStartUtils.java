@@ -40,6 +40,7 @@ public class HyperledgerFabricComponentsStartUtils {
     private static final Logger logger = LoggerFactory.getLogger(HyperledgerFabricComponentsStartUtils.class);
 
     public static void startHyperledgerFabricCaServer(String namespace, String name, String image, String command) {
+
         logger.info("[k8s->pod] start hyperledger fabric ca server pod, name is :{}, namespace is :{}, images name :{}",
                 name,namespace,image);
         final Map<String, String> labels = new HashMap<String, String>(4) {{
@@ -58,7 +59,7 @@ public class HyperledgerFabricComponentsStartUtils {
                                     .command(new ArrayList<String>() {{
                                         add("/bin/bash");
                                         add("-c");
-                                        add(command);
+                                        add("fabric-ca-server start -b admin:adminpw");
                                     }})
                                     .env(new ArrayList<V1EnvVar>() {{
                                         add(new V1EnvVar().name("TZ").value("Asia/Shanghai"));
@@ -69,8 +70,8 @@ public class HyperledgerFabricComponentsStartUtils {
                                     }})
                                     .volumeMounts(new ArrayList<V1VolumeMount>() {{
                                         add(new V1VolumeMount().name("ca-data").mountPath("/etc/hyperledger/fabric-ca-server").subPath(namespace + "/" + name));
-//                                add(new V1VolumeMount().name("ca-config").mountPath("/opt").subPath("/fabric-ca-server-config-rca.yaml"));
-//                                add(new V1VolumeMount().name("ca-start").mountPath("/opt").subPath("/start-rca.sh"));
+//                                        add(new V1VolumeMount().name("ca-config").mountPath("/opt/fabric-ca-server-config-rca.yaml"));
+//                                        add(new V1VolumeMount().name("ca-start").mountPath("/opt/start-rca.sh"));
                                     }})
                     );
                 }})
@@ -79,14 +80,14 @@ public class HyperledgerFabricComponentsStartUtils {
                             .name("ca-data")
                             .persistentVolumeClaim(new V1PersistentVolumeClaimVolumeSource().claimName(BlockChainK8SConstant.getK8sPvcName(namespace)))
                     );
-                    /*add(new V1Volume()
-                            .name("ca-config")
-                            .persistentVolumeClaim(new V1PersistentVolumeClaimVolumeSource().claimName("/data/share/fabric-ca/fabric-ca-server-config-rca.yaml"))
-                    );
-                    add(new V1Volume()
-                            .name("ca-start")
-                            .persistentVolumeClaim(new V1PersistentVolumeClaimVolumeSource().claimName("/data/share/fabric-ca/start-rca.sh"))
-                    );*/
+//                    add(new V1Volume()
+//                            .name("ca-config")
+//                            .hostPath(new V1HostPathVolumeSource().path(BlockChainK8SConstant.getWorkPath()+"/bin/1.4.5/ca/fabric-ca-server-config-rca.yaml"))
+//                    );
+//                    add(new V1Volume()
+//                            .name("ca-start")
+//                            .hostPath(new V1HostPathVolumeSource().path(BlockChainK8SConstant.getWorkPath()+"/bin/1.4.5/ca/start-rca.sh"))
+//                    );
                 }});
         K8SUtils.createDeployment(namespace, name, labels, podSpec);
         logger.debug("[k8s->pod] start hyperledger fabric ca server pod, create ca server pod deployment success, name is :{}",name);

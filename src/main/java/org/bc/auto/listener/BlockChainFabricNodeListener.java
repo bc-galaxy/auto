@@ -94,9 +94,9 @@ public class BlockChainFabricNodeListener implements BlockChainListener{
         V1PersistentVolumeClaimVolumeSource v1PersistentVolumeClaimVolumeSource = new V1PersistentVolumeClaimVolumeSource().claimName(BlockChainK8SConstant.getK8sPvcName(fabricConstructVo.getNameSapce())).readOnly(false);
         // 创建deployment
         V1PodSpec podSpec = new V1PodSpec()
-                .hostAliases(new ArrayList<V1HostAlias>() {{
-                    add(new V1HostAlias().ip("127.0.0.1").hostnames(Arrays.asList(fabricConstructVo.getNodeDomain())));
-                }})
+//                .hostAliases(new ArrayList<V1HostAlias>() {{
+//                    add(new V1HostAlias().ip("127.0.0.1").hostnames(Arrays.asList(fabricConstructVo.getNodeDomain())));
+//                }})
                 .containers(new ArrayList<V1Container>() {{
                     add(new V1Container()
                             .name(fabricConstructVo.getNodeName())
