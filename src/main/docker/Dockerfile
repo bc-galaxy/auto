@@ -4,7 +4,8 @@ WORKDIR /data
 # 更新apt
 ADD sources.list /etc/apt/sources.list
 RUN apt-get -y update
-RUN apt-get install -y libltdl7
+RUN apt-get install -y libltdl7 \
+    && apt-get install -y jq
 
 # 添加并设置默认时区
 ADD zoneinfo /usr/share/zoneinfo
