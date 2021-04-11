@@ -8,6 +8,7 @@ import org.bc.auto.dao.BCNodeMapper;
 import org.bc.auto.exception.BaseRuntimeException;
 import org.bc.auto.exception.ValidatorException;
 import org.bc.auto.listener.source.BlockChainFabricJoinChannelEventSource;
+import org.bc.auto.model.entity.BCChannelOrgPeer;
 import org.bc.auto.model.entity.BCCluster;
 import org.bc.auto.model.entity.BCNode;
 import org.bc.auto.listener.source.BlockChainFabricNodeEventSource;
@@ -125,6 +126,7 @@ public class NodeServiceImpl implements NodeService {
 
         // 校验 通道名称 是否为空
         String channelName = jsonObject.getString("channelName");
+        String channelId = jsonObject.getString("channelId");
         ValidatorUtils.isNotNull(channelName, ValidatorResultCode.VALIDATOR_CHANNEL_NAME_NULL);
         logger.debug("[node->join] node join blockchain's channel，get the channel name is:{}",channelName);
 
@@ -133,18 +135,42 @@ public class NodeServiceImpl implements NodeService {
         BCNode ordererNode =bcNodeList.get(new Random().nextInt(bcNodeList.size()));
 
         //获取需要加入的节点列表对象
-        JSONArray jsonArray = jsonObject.getJSONArray("joinArgs");
-        for(int i = 0;i<jsonArray.size();i++){
-            JSONObject jsonObjectTemp = jsonArray.getJSONObject(i);
+        JSONArray jsonArray = new JSONArray();
+
+
+
+        JSONArray peerIds = jsonObject.getJSONArray("peerIds");
+        ValidatorUtils.isNotNull(peerIds, ValidatorResultCode.VALIDATOR_CHANNEL_PEER_ID_NULL);
+        List<String> peerIdList = peerIds.toJavaList(String.class);
+        List<BCNode> peerList = bcNodeMapper.getNodeByPeerIds(peerIdList);
+        if(peerList.size() != peerIds.size()){
+            logger.error("[channel->join] join channel，get the peer list is not match parameters, get the peer list size is:{}, but expect value is ",peerList.size(),peerIds.size());
+            throw new ValidatorException(ValidatorResultCode.VALIDATOR_CHANNEL_PEER_LIST_ERROR);
+        }
+
+        List<BCChannelOrgPeer> bcChannelOrgPeerList = new ArrayList<>();
+        for(BCNode bcNode : peerList ){
+            JSONObject jsonObjectTemp = new JSONObject();
+            BCChannelOrgPeer bcChannelOrgPeer = new BCChannelOrgPeer();
             jsonObjectTemp.put("clusterName",bcCluster.getClusterName());
             jsonObjectTemp.put("channelName",channelName);
             jsonObjectTemp.put("ordererOrgName",ordererNode.getOrgName());
             jsonObjectTemp.put("ordererName",ordererNode.getNodeName());
             jsonObjectTemp.put("clusterVersion",bcCluster.getClusterVersion());
+            jsonObjectTemp.put("peerName",bcNode.getNodeName());
+            jsonObjectTemp.put("orgName",bcNode.getOrgName());
+            jsonArray.add(jsonObjectTemp);
+            bcChannelOrgPeer.setOrgId(bcNode.getOrgId());
+            bcChannelOrgPeer.setPeerId(bcNode.getId());
+            bcChannelOrgPeer.setChannelId(channelId);
+            bcChannelOrgPeerList.add(bcChannelOrgPeer);
         }
+        
+
 
         BlockChainFabricJoinChannelEventSource blockChainFabricJoinChannelEventSource = new BlockChainFabricJoinChannelEventSource();
         blockChainFabricJoinChannelEventSource.setJsonArray(jsonArray);
+        blockChainFabricJoinChannelEventSource.setBcChannelOrgPeerList(bcChannelOrgPeerList);
         boolean flag =BlockChainShellQueueUtils.add(blockChainFabricJoinChannelEventSource);
 
         return flag;

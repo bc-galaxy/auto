@@ -24,7 +24,7 @@ public class OrgController {
 
 
     @PostMapping("/create")
-    public Result createChain(@RequestBody JSONObject jsonObject) {
+    public Result createOrg(@RequestBody JSONObject jsonObject) {
         logger.debug("[org->create] 用户请求区块链create方法");
         orgService.createOrg(jsonObject);
 //        clusterService.createCluster(jsonObject);

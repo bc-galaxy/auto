@@ -69,7 +69,7 @@ CREATE TABLE bc_org
 DROP TABLE IF EXISTS bc_cluster_info;
 CREATE TABLE bc_cluster_info
 (
-    cluster_id VARCHAR(128) NULL DEFAULT NULL COMMENT '集群编号',
+    cluster_id VARCHAR(64) NULL DEFAULT NULL COMMENT '集群编号',
     orderer_count INT(4)  NULL DEFAULT NULL COMMENT 'orderer节点总数',
     cluster_consensus_type INT(4) NULL DEFAULT NULL COMMENT '共识构建类型',
     cluster_version VARCHAR(32) NULL DEFAULT NULL COMMENT '集群版本',
@@ -79,11 +79,26 @@ CREATE TABLE bc_cluster_info
 DROP TABLE IF EXISTS bc_channel;
 CREATE TABLE bc_channel
 (
-    id VARCHAR(128) NULL DEFAULT NULL COMMENT '通道编号',
+    id VARCHAR(64) NULL DEFAULT NULL COMMENT '通道编号',
     cluster_id VARCHAR(32) NULL DEFAULT NULL COMMENT '集群编号',
     cluster_name VARCHAR(32) NULL DEFAULT NULL COMMENT '集群名称',
     channel_name VARCHAR(32) NULL DEFAULT NULL COMMENT '通道名称',
     channel_status INT(4)  NULL DEFAULT NULL COMMENT '通道状态',
     is_block_listener INT(4) NULL DEFAULT NULL COMMENT '是否开启区块监听',
     PRIMARY KEY (id)
+);
+
+DROP TABLE IF EXISTS bc_channel_org;
+CREATE TABLE bc_channel_org
+(
+    channel_id VARCHAR(64) NULL DEFAULT NULL COMMENT '通道编号',
+    org_id VARCHAR(64) NULL DEFAULT NULL COMMENT '组织编号',
+);
+
+DROP TABLE IF EXISTS bc_channel_peer;
+CREATE TABLE bc_channel_org
+(
+    channel_id VARCHAR(64) NULL DEFAULT NULL COMMENT '通道编号',
+    org_id VARCHAR(64) NULL DEFAULT NULL COMMENT '组织编号',
+    peer_id VARCHAR(64) NULL DEFAULT NULL COMMENT '节点编号',
 );

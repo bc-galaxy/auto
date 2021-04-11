@@ -2,6 +2,7 @@ package org.bc.auto.listener.source;
 
 import org.bc.auto.model.entity.BCChannel;
 import org.bc.auto.model.entity.BCCluster;
+import org.bc.auto.model.entity.BCOrg;
 
 import java.util.List;
 
@@ -11,7 +12,7 @@ public class BlockChainFabricChannelEventSource implements BlockChainEventSource
 
     private BCCluster bcCluster;
 
-    private List<String> orgNames;
+    private List<BCOrg> bcOrgs;
 
     public BCChannel getBcChannel() {
         return bcChannel;
@@ -29,11 +30,11 @@ public class BlockChainFabricChannelEventSource implements BlockChainEventSource
         this.bcCluster = bcCluster;
     }
 
-    public List<String> getOrgNames() {
-        return orgNames;
+    public List<BCOrg> getBcOrgs() {
+        return bcOrgs;
     }
 
-    public void setOrgNames(List<String> orgNames) {
-        this.orgNames = orgNames;
+    public void setBcOrgs(List<BCOrg> bcOrgs) {
+        this.bcOrgs = bcOrgs;
     }
 }

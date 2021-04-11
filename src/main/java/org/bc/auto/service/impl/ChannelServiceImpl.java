@@ -5,11 +5,13 @@ import com.alibaba.fastjson.JSONObject;
 import org.bc.auto.code.impl.ValidatorResultCode;
 import org.bc.auto.dao.BCChannelMapper;
 import org.bc.auto.dao.BCClusterMapper;
+import org.bc.auto.dao.BCOrgMapper;
 import org.bc.auto.exception.BaseRuntimeException;
 import org.bc.auto.exception.ValidatorException;
 import org.bc.auto.listener.source.BlockChainFabricChannelEventSource;
 import org.bc.auto.model.entity.BCChannel;
 import org.bc.auto.model.entity.BCCluster;
+import org.bc.auto.model.entity.BCOrg;
 import org.bc.auto.service.ChannelService;
 import org.bc.auto.service.OrgService;
 import org.bc.auto.utils.BlockChainShellQueueUtils;
@@ -38,6 +40,12 @@ public class ChannelServiceImpl implements ChannelService {
         this.bcChannelMapper = bcChannelMapper;
     }
 
+    private BCOrgMapper bcOrgMapper;
+    @Autowired
+    public void setBcOrgMapper(BCOrgMapper bcOrgMapper) {
+        this.bcOrgMapper = bcOrgMapper;
+    }
+
     public void createChannel(JSONObject jsonObject)throws BaseRuntimeException {
         String clusterId = jsonObject.getString("clusterId");
         ValidatorUtils.isNotNull(clusterId, ValidatorResultCode.VALIDATOR_CLUSTER_ID_NULL);
@@ -57,9 +65,15 @@ public class ChannelServiceImpl implements ChannelService {
         }
 
         //组成通道的组织名称不能为空
-        JSONArray orgPeerNames = jsonObject.getJSONArray("orgNames");
-        ValidatorUtils.isNotNull(orgPeerNames, ValidatorResultCode.VALIDATOR_ORG_NAME_NULL);
-        List<String> orgNames = orgPeerNames.toJavaList(String.class);
+        JSONArray orgIds = jsonObject.getJSONArray("orgIds");
+        ValidatorUtils.isNotNull(orgIds, ValidatorResultCode.VALIDATOR_ORG_ID_NULL);
+        List<String> orgIdList = orgIds.toJavaList(String.class);
+        //根据组织的主键列表查询组织集合
+        List<BCOrg> bcOrgList = bcOrgMapper.getOrgByOrgIds(orgIdList);
+        if(bcOrgList.size() != orgIds.size()){
+            logger.error("[channel->create] create channel，get the org list is not match parameters, get the org list size is:{}, but expect value is ",bcOrgList.size(),orgIds.size());
+            throw new ValidatorException(ValidatorResultCode.VALIDATOR_CHANNEL_ORG_LIST_ERROR);
+        }
         //TODO 未做名称重复检查
 
         BCChannel bcChannel = new BCChannel();
@@ -79,7 +93,7 @@ public class ChannelServiceImpl implements ChannelService {
         BlockChainFabricChannelEventSource blockChainFabricChannelEventSource = new BlockChainFabricChannelEventSource();
         blockChainFabricChannelEventSource.setBcChannel(bcChannel);
         blockChainFabricChannelEventSource.setBcCluster(bcCluster);
-        blockChainFabricChannelEventSource.setOrgNames(orgNames);
+        blockChainFabricChannelEventSource.setBcOrgs(bcOrgList);
         boolean flag = BlockChainShellQueueUtils.add(blockChainFabricChannelEventSource);
         if(!flag){
             logger.error("[async] 通道加入任务队列错误，请确认错误信息。");

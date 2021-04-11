@@ -25,7 +25,7 @@ public class BlockChainShellQueueUtilsTest {
             bcCluster.setInstallStatus(1);
             //设置集群的过期时间，如果为0则永远不过期；如果设置了日期则会定时删除此网络集群
             bcCluster.setExpiresTime(0L);
-            BlockChainShellQueueUtils.add(bcCluster);
+//            BlockChainShellQueueUtils.add(bcCluster);
             logger.info("队列的长度为：{}", BlockChainShellQueueUtils.size());
         }
     }
@@ -46,7 +46,7 @@ public class BlockChainShellQueueUtilsTest {
             bcCluster.setInstallStatus(1);
             //设置集群的过期时间，如果为0则永远不过期；如果设置了日期则会定时删除此网络集群
             bcCluster.setExpiresTime(0L);
-            BlockChainShellQueueUtils.add(bcCluster);
+//            BlockChainShellQueueUtils.add(bcCluster);
         }
         BCCluster bcCluster = (BCCluster) BlockChainShellQueueUtils.peek();
         logger.info("队列的元素为：{}",bcCluster.getClusterName());
@@ -75,7 +75,7 @@ public class BlockChainShellQueueUtilsTest {
                         bcCluster.setCreateTime(DateUtils.getCurrentMillisTimeStamp());
                         bcCluster.setInstallStatus(1);
                         bcCluster.setExpiresTime(0L);
-                        BlockChainShellQueueUtils.add(bcCluster);
+//                        BlockChainShellQueueUtils.add(bcCluster);
 
                     }catch (Exception e){
                         logger.error("获取任务队列失败");

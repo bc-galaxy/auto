@@ -41,6 +41,16 @@
         from bc_org where org_name = #{orgName};
     </select>
 
+    <select id="getOrgByOrgIds" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from bc_org where
+          org_status = 1 AND id IN
+          <foreach collection ="list" item="orgId" open="(" close=")" separator =",">
+            #{orgId}
+          </foreach >
+    </select>
+
     <select id="getOrgByOrgNameAndClusterId" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List" />

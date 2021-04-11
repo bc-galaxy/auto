@@ -1,6 +1,8 @@
 package org.bc.auto.service.impl;
 
 import com.alibaba.fastjson.JSONArray;
+import org.bc.auto.dao.BCChannelOrgMapper;
+import org.bc.auto.dao.BCChannelOrgPeerMapper;
 import org.bc.auto.dao.BCClusterMapper;
 import org.bc.auto.listener.BlockChainEvent;
 import org.bc.auto.listener.BlockChainFabricNodeListener;
@@ -17,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -47,6 +50,18 @@ public class BlockChainQueueServiceImpl implements BlockChainQueueService {
     @Autowired
     public void setOrgService(OrgService orgService) {
         this.orgService = orgService;
+    }
+
+    private BCChannelOrgMapper bcChannelOrgMapper;
+    @Autowired
+    public void setBcChannelOrgMapper(BCChannelOrgMapper bcChannelOrgMapper) {
+        this.bcChannelOrgMapper = bcChannelOrgMapper;
+    }
+
+    private BCChannelOrgPeerMapper bcChannelOrgPeerMapper;
+    @Autowired
+    public void setBcChannelOrgPeerMapper(BCChannelOrgPeerMapper bcChannelOrgPeerMapper) {
+        this.bcChannelOrgPeerMapper = bcChannelOrgPeerMapper;
     }
 
     public void run(){
@@ -115,12 +130,24 @@ public class BlockChainQueueServiceImpl implements BlockChainQueueService {
                     //并对返回的结果进行判断
                     BlockChainFabricChannelEventSource blockChainFabricChannelEventSource = (BlockChainFabricChannelEventSource) blockChainEventSource;
                     BCChannel bcChannel = blockChainFabricChannelEventSource.getBcChannel();
+
                     //获取所有的orderer列表
                     List<BCNode> bcNodeList = nodeService.getNodeByNodeTypeAndCluster(1,blockChainFabricChannelEventSource.getBcCluster().getId());
                     BCNode ordererNode =bcNodeList.get(new Random().nextInt(bcNodeList.size()));
+
+                    List<BCOrg> bcOrgList = blockChainFabricChannelEventSource.getBcOrgs();
+                    List<String> orgNameList = new ArrayList<>();
+                    List<BCChannelOrg> bcChannelOrgList = new ArrayList<>();
+                    for (BCOrg bcOgr: bcOrgList ) {
+                        BCChannelOrg bcChannelOrg = new BCChannelOrg();
+                        bcChannelOrg.setOrgId(bcOgr.getId());
+                        bcChannelOrg.setChannelId(bcChannel.getId());
+                        bcChannelOrgList.add(bcChannelOrg);
+                    }
+                    bcChannelOrgMapper.insertChannelOrg(bcChannelOrgList);
                     //执行创建通道脚本
                     //生成通道的通道的配置文件
-                    HyperledgerFabricComponentsStartUtils.buildFabricChannel(blockChainFabricChannelEventSource.getBcCluster(),blockChainFabricChannelEventSource.getOrgNames(),ordererNode,blockChainFabricChannelEventSource.getBcChannel());
+                    HyperledgerFabricComponentsStartUtils.buildFabricChannel(blockChainFabricChannelEventSource.getBcCluster(),orgNameList,ordererNode,blockChainFabricChannelEventSource.getBcChannel());
 
                     break;
                 }
@@ -128,6 +155,8 @@ public class BlockChainQueueServiceImpl implements BlockChainQueueService {
                     logger.info("[queue->join] 执行加入节点脚本");
                     BlockChainFabricJoinChannelEventSource blockChainFabricJoinChannelEventSource = (BlockChainFabricJoinChannelEventSource) blockChainEventSource;
                     JSONArray jsonArray = blockChainFabricJoinChannelEventSource.getJsonArray();
+                    List<BCChannelOrgPeer> bcChannelOrgPeerList = blockChainFabricJoinChannelEventSource.getBcChannelOrgPeerList();
+                    bcChannelOrgPeerMapper.insertChannelOrgPeer(bcChannelOrgPeerList);
                     HyperledgerFabricComponentsStartUtils.nodeJoinFabricChannel(jsonArray);
                     break;
                 default:

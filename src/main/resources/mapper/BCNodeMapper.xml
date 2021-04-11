@@ -36,6 +36,16 @@
         from bc_node;
     </select>
 
+    <select id="getNodeByPeerIds" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from bc_node where
+        node_type = 2 AND id IN
+        <foreach collection ="list" item="peerId" open="(" close=")" separator =",">
+            #{peerId}
+        </foreach >
+    </select>
+
     <select id="getNodeByNodeName" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List" />

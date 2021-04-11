@@ -37,6 +37,11 @@ public enum ValidatorResultCode  implements ResultCode {
     VALIDATOR_CHANNEL_QUEUE_ERROR(10024,"通道任务加入队列失败"),
     VALIDATOR_NODE_ARRAY_ERROR(10025,"节点列表为空"),
     VALIDATOR_CHANNEL_NAME_NULL(10026,"通道名称为空，请确定"),
+
+    VALIDATOR_CHANNEL_ORG_LIST_ERROR(10027,"创建通道时传入的组织编号列表与实际得到的不符合"),
+    VALIDATOR_ORG_ID_NULL(10028,"获取组织编号列表为空"),
+    VALIDATOR_CHANNEL_PEER_ID_NULL(10029,"节点假如通道时，获取的节点列表失败"),
+    VALIDATOR_CHANNEL_PEER_LIST_ERROR(10030,"节点加入通道时传入的节点列表不符合规则"),
     ;
 
     private int code;

@@ -24,7 +24,7 @@ public class ChannelController {
     }
 
     @PostMapping("/create")
-    public Result createChain(@RequestBody JSONObject jsonObject) {
+    public Result createChannel(@RequestBody JSONObject jsonObject) {
         logger.debug("[channel->create] 用户请求区块链create方法");
 
         channelService.createChannel(jsonObject);
