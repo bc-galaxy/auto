@@ -278,7 +278,7 @@ public class BlockChainFabricNodeListener implements BlockChainListener{
                     add(new V1Volume()
                                     .name("peer-data")
 //                            .persistentVolumeClaim(new V1PersistentVolumeClaimVolumeSource().claimName(K8sUtils.getPvcName(namespace)).readOnly(false))
-                                    .persistentVolumeClaim(new V1PersistentVolumeClaimVolumeSource().claimName("kledger-auto").readOnly(false))
+                                    .persistentVolumeClaim(new V1PersistentVolumeClaimVolumeSource().claimName(BlockChainK8SConstant.getK8sPvcName(fabricConstructVo.getNameSapce())).readOnly(false))
                     );
                     add(new V1Volume()
                             .name("peer-docker")
