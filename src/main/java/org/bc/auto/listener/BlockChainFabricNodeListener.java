@@ -66,7 +66,7 @@ public class BlockChainFabricNodeListener implements BlockChainListener{
                         fabricConstructVo.setOrgName(bcNode.getOrgName());
                         fabricConstructVo.setOrgMspId(String.join("",bcNode.getOrgName(),"MSP"));
                         fabricConstructVo.setTlsEnable("true");
-                        fabricConstructVo.setImageName(BlockChainFabricImagesConstant.getFabricOrdereImage(bcCluster.getClusterVersion()));
+                        fabricConstructVo.setImageName(BlockChainFabricImagesConstant.getFabricPeerImage(bcCluster.getClusterVersion()));
                         fabricConstructVo.setChainCodePort(7052);
                         bcNode = startPeer(fabricConstructVo,bcNode);
                     }
