@@ -284,7 +284,7 @@ public class BlockChainFabricNodeListener implements BlockChainListener{
                             .name("peer-docker")
                             .hostPath(new V1HostPathVolumeSource().path("/var/run/docker.sock")));
                 }});
-        K8SUtils.createDeployment(fabricConstructVo.getNodeName(), fabricConstructVo.getNodeName(), labels, podSpec);
+        K8SUtils.createDeployment(fabricConstructVo.getNameSapce(), fabricConstructVo.getNodeName(), labels, podSpec);
 
         String nodeTlsCaPath = fabricConstructVo.getCertPath() + "/" + fabricConstructVo.getNameSapce() + "/crypto-config/peerOrganizations/" + fabricConstructVo.getOrgName().toLowerCase() + "-" + fabricConstructVo.getNameSapce() + "/peers/" + fabricConstructVo.getNodeDomain() + "/tls/ca.crt";
         bcNode.setNodePort(fabricConstructVo.getNodePort());
