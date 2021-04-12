@@ -387,6 +387,12 @@ public class HyperledgerFabricComponentsStartUtils {
         // 从要创建通道的组织列表中随机选择一个组织名称
         String createOrgNameRandom = orgNameList.get(new Random().nextInt(orgNameList.size()));
 
+        // 生成configtx.yaml
+        String yamlFilePath = BlockChainK8SConstant.getSavePath() + File.separator + bcCluster.getClusterName().toLowerCase() + File.separator + "channels" + File.separator + bcChannel.getChannelName() + File.separator + "configtx.yaml";
+        if (!ConfigTxUtils.generateAppConfigTxYaml(arr, yamlFilePath)) {
+            throw new K8SException();
+        }
+
         // 生成channel.tx 并创建通道
         if (ShellUtils.exec(BlockChainK8SConstant.getFabricOperateScriptsPath() + CREATE_CHANNEL_SCRIPT_NAME, bcCluster.getClusterName(), bcChannel.getChannelName(), createOrgNameRandom, ordererNode.getNodeName(), BlockChainK8SConstant.getFabricToolsPath(bcCluster.getClusterVersion()), BlockChainK8SConstant.getFabricOperateScriptsPath(), BlockChainK8SConstant.getSavePath())) {
             //返回channel对象
