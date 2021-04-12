@@ -95,8 +95,8 @@ CREATE TABLE bc_channel_org
     org_id VARCHAR(64) NULL DEFAULT NULL COMMENT '组织编号',
 );
 
-DROP TABLE IF EXISTS bc_channel_peer;
-CREATE TABLE bc_channel_peer
+DROP TABLE IF EXISTS bc_channel_org_peer;
+CREATE TABLE bc_channel_org_peer
 (
     channel_id VARCHAR(64) NULL DEFAULT NULL COMMENT '通道编号',
     org_id VARCHAR(64) NULL DEFAULT NULL COMMENT '组织编号',

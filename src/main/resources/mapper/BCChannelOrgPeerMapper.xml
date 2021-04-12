@@ -12,7 +12,7 @@
     </sql>
 
     <insert id="insertChannelOrgPeer">
-        INSERT INTO bc_channel_org (channel_id,org_id,peer_id)
+        INSERT INTO bc_channel_org_peer (channel_id,org_id,peer_id)
         VALUES
         <foreach collection ="list" item="bcChannelOrg" separator =",">
             (#{bcChannelOrg.channelId},#{bcChannelOrg.orgId},#{bcChannelOrg.peerId})
