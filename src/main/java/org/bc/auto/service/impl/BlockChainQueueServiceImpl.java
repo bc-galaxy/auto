@@ -139,6 +139,7 @@ public class BlockChainQueueServiceImpl implements BlockChainQueueService {
                     List<String> orgNameList = new ArrayList<>();
                     List<BCChannelOrg> bcChannelOrgList = new ArrayList<>();
                     for (BCOrg bcOgr: bcOrgList ) {
+                        orgNameList.add(bcOgr.getOrgName());
                         BCChannelOrg bcChannelOrg = new BCChannelOrg();
                         bcChannelOrg.setOrgId(bcOgr.getId());
                         bcChannelOrg.setChannelId(bcChannel.getId());
