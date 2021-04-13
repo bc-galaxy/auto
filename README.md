@@ -11,7 +11,7 @@ auto是使用java语言开发的纯后端服务(其中部分会用到shell脚本
 
 ## Documentation
 请访问我们的在线文档
-- [master branch (development)](http://hyperledger-fabric.readthedocs.io/en/master/)
+- [master branch (development)](./docs/setup_v1.md)
 
 ## Contributing
 欢迎以各种形式对auto项目做出贡献，总有很多事情值得我们去做。
