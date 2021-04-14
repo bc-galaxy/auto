@@ -1,31 +1,37 @@
-# auto pv
+# 创建auto的pv存储
 ---
 apiVersion: v1
 kind: PersistentVolume
 metadata:
+  # 创建pv的名称
   name: bc-auto-pv
 spec:
   capacity:
+    # pv所需要的存储大小
     storage: 2Mi
   accessModes:
     - ReadWriteMany
   nfs:
+    # 挂载nfs的地址
     server: "127.0.0.1"
+    # 挂载nfs的地址目录
     path: "/home/nfs_data"
 
-# namespace
+# 创建auto运行namespace
 ---
 apiVersion: v1
 kind: Namespace
 metadata:
   name: bc-auto
 
-# auto pvc
+# 创建auto的pvc存储
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
+  # pvc的名称
   name: bc-auto-pvc
+  # 所属的空间
   namespace: bc-auto
 spec:
   accessModes:
@@ -34,14 +40,17 @@ spec:
   resources:
     requests:
       storage: 2Mi
+  # 属于pv的名称，与上面创建的pv对应
   volumeName: bc-auto-pv
 
-#auto deployment
+# 创建auto应用部分
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  # 所属k8s的namespace，与上面创建的namespace对应
   namespace: bc-auto
+  # 启动auto应用的名称
   name: bc-auto
   labels:
     app: cluster
@@ -59,48 +68,35 @@ spec:
         role: bc-auto
     spec:
       dnsPolicy: ClusterFirst
+      # auto的绑定host
       hostAliases:
-      - ip: 127.0.0.1
-        hostnames:
-        - "bc.auto.com"
+        - ip: 127.0.0.1
+          hostnames:
+            - "bc.auto.com"
       containers:
-      - name: bc-auto
-        image: bc/auto:1.0-SNAPSHOT
-        workingDir: /data
-        ports:
-        - containerPort: 60000
-        env:
-        - name: LANG
-          value: "C.UTF-8"
-        # version list: V1.4.0, V1.4.5
-        - name: KLEDGER_VERSION
-          value: "V1.4.5"
-
-        # kledger auto name
-        - name: KLEDGER_AUTO_NAME
-          value: "kledger-auto"
-        # kledger config
-        - name: KLEDGER_LOG_LEVEL
-          value: "info"
-        - name: KLEDGER_TLS_ENABLE
-          value: "true"
-        - name: KLEDGER_DB_MODE
-          value: "couchdb"
-        command:
-        - /bin/bash
-        - -c
-        - java -jar /work/auto/auto-1.0-SNAPSHOT.jar
-        # - sleep 360000
-        volumeMounts:
-          - name: storage
-            mountPath: "/data/auto"
+        - name: bc-auto
+          # 拉取的镜像名称和tag，与自己编译的镜像保持对应
+          image: bc/auto:1.0-SNAPSHOT
+          workingDir: /data
+          ports:
+            - containerPort: 60000
+          env:
+            - name: LANG
+              value: "C.UTF-8"
+          command:
+            - /bin/bash
+            - -c
+            - java -jar /work/auto/auto-1.0-SNAPSHOT.jar
+          volumeMounts:
+            - name: storage
+              mountPath: "/data/auto"
       volumes:
-      - name: storage
-        persistentVolumeClaim:
-          claimName: bc-auto-pvc
+        - name: storage
+          persistentVolumeClaim:
+            claimName: bc-auto-pvc
 
 
-# kledger-auto service
+# 创建auto的service地址
 ---
 apiVersion: v1
 kind: Service
@@ -111,7 +107,7 @@ metadata:
     app: cluster
     role: bc-auto
 spec:
-  # clusterIP: None
+  # 根据需要确定是cluster还是nodeport
   type: NodePort
   selector:
     app: cluster
