@@ -7,6 +7,7 @@ import org.bc.auto.model.entity.BCCert;
 import org.bc.auto.service.CertService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -20,6 +21,7 @@ public class CertServiceImpl implements CertService {
     }
 
     @Override
+    @Transactional
     public int insertBCCert(BCCert bcCert) throws BaseRuntimeException {
         return bcCertMapper.insertBCCert(bcCert);
     }

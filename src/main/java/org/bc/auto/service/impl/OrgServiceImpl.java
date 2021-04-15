@@ -17,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -42,6 +43,7 @@ public class OrgServiceImpl implements OrgService {
         this.nodeService = nodeService;
     }
 
+    @Transactional
     public BCOrg createOrg(JSONObject jsonObject)throws BaseRuntimeException {
 
         //获取集群编号用来确认在哪个集群中创建组织

@@ -20,50 +20,46 @@ public class BlockChainFabricOrgListener implements BlockChainListener{
 
     @Override
     public void doEven(BlockChainEvent blockChainEvent) {
-        ThreadPoolManager.newInstance().addExecuteTask(new Runnable() {
-            @Override
-            public void run() {
-                try{
+
+        try{
 //                    OrgService orgService = SpringBeanUtil.getBean(OrgService.class);
-                    BCClusterMapper bcClusterMapper = SpringBeanUtil.getBean(BCClusterMapper.class);
-                    //获取需要创建的组织对象
-                    BlockChainFabricOrgEventSource blockChainFabricOrgEventSource = (BlockChainFabricOrgEventSource)blockChainEvent.getBlockChainEventSource();
-                    BCOrg bcOrg = blockChainFabricOrgEventSource.getBcOrg();
+            BCClusterMapper bcClusterMapper = SpringBeanUtil.getBean(BCClusterMapper.class);
+            //获取需要创建的组织对象
+            BlockChainFabricOrgEventSource blockChainFabricOrgEventSource = (BlockChainFabricOrgEventSource)blockChainEvent.getBlockChainEventSource();
+            BCOrg bcOrg = blockChainFabricOrgEventSource.getBcOrg();
 
-                    BCCluster bcCluster = bcClusterMapper.getClusterById(bcOrg.getClusterId());
-                    //这里的组织处理专门针对Orderer的组织
-                    //添加成功之后，如果是Orderer的组织类型，则进行orderer节点创建。
-                    //否则就不进行创建，创建的节点个数由集群传入的值为准。
-                    //并且需要做orderer组织的判断，同一个集群/nameSpace中仅仅只有一个orderer组织。
-                    if(bcOrg.getOrgType() == 1){
-                        //先进行文件的创建，此操作是特殊操作，在第一次启动集群的时候需要执行。
-                        //执行创建之前，需要orderer节点相关的证书。
-                        HyperledgerFabricComponentsStartUtils.buildFabricChain(bcCluster,bcOrg);
+            BCCluster bcCluster = bcClusterMapper.getClusterById(bcOrg.getClusterId());
+            //这里的组织处理专门针对Orderer的组织
+            //添加成功之后，如果是Orderer的组织类型，则进行orderer节点创建。
+            //否则就不进行创建，创建的节点个数由集群传入的值为准。
+            //并且需要做orderer组织的判断，同一个集群/nameSpace中仅仅只有一个orderer组织。
+            if(bcOrg.getOrgType() == 1){
+                //先进行文件的创建，此操作是特殊操作，在第一次启动集群的时候需要执行。
+                //执行创建之前，需要orderer节点相关的证书。
+                HyperledgerFabricComponentsStartUtils.buildFabricChain(bcCluster,bcOrg);
 
-                        for(int i=0;i<bcCluster.getOrdererCount();i++){
-                            JSONObject jsonObjectOrderer = new JSONObject();
-                            jsonObjectOrderer.put("clusterId",bcCluster.getId());
-                            jsonObjectOrderer.put("nodeName","orderer"+i);
-                            jsonObjectOrderer.put("nodeType",1);
-                            jsonObjectOrderer.put("orgId",bcOrg.getId());
+                for(int i=0;i<bcCluster.getOrdererCount();i++){
+                    JSONObject jsonObjectOrderer = new JSONObject();
+                    jsonObjectOrderer.put("clusterId",bcCluster.getId());
+                    jsonObjectOrderer.put("nodeName","orderer"+i);
+                    jsonObjectOrderer.put("nodeType",1);
+                    jsonObjectOrderer.put("orgId",bcOrg.getId());
 
 //                            nodeService.createNode(jsonObjectOrderer);
-                        }
-                        //当节点创建完成之后，开始生成config的tx文件
-                    }
-
-                    //把对应的组织对象添加至脚本的执行队列中，等待执行
-                    boolean flag = BlockChainShellQueueUtils.add(blockChainFabricOrgEventSource);
-                    if(!flag){
-                        logger.error("[async] 组织加入任务队列错误，请确认错误信息。");
-                        throw new ValidatorException(ValidatorResultCode.VALIDATOR_ORG_QUEUE_ERROR);
-                    }
-                }catch (Exception e){
-                    logger.error("[async] create cluster error, error info is {}",e.getMessage());
-                    throw new K8SException();
                 }
+                //当节点创建完成之后，开始生成config的tx文件
             }
 
-        });
+            //把对应的组织对象添加至脚本的执行队列中，等待执行
+            boolean flag = BlockChainShellQueueUtils.add(blockChainFabricOrgEventSource);
+            if(!flag){
+                logger.error("[async] 组织加入任务队列错误，请确认错误信息。");
+                throw new ValidatorException(ValidatorResultCode.VALIDATOR_ORG_QUEUE_ERROR);
+            }
+        }catch (Exception e){
+            logger.error("[async] create cluster error, error info is {}",e.getMessage());
+            throw new K8SException();
+        }
+
     }
 }

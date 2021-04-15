@@ -66,7 +66,7 @@ public class ClusterServiceImpl implements ClusterService {
         int clusterType = jsonObject.getIntValue("clusterType");
         logger.debug("[cluster->create] create blockchain's cluster，get the cluster type is :{}, value 1 is Fabric, value 2 is QuoRom",clusterType);
         if(!ValidatorUtils.isGreaterThanZero(clusterType)){
-            logger.error("[cluster->create] 创建区块链集群，请检查安装类型信息:{}",clusterType);
+            logger.error("[cluster->create] create blockchain's cluster，please check cluster type is right:{}",clusterType);
             throw new ValidatorException(ValidatorResultCode.VALIDATOR_CLUSTER_TYPE_NULL);
         }
 

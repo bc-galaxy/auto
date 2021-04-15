@@ -21,6 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -46,6 +47,7 @@ public class ChannelServiceImpl implements ChannelService {
         this.bcOrgMapper = bcOrgMapper;
     }
 
+    @Transactional
     public void createChannel(JSONObject jsonObject)throws BaseRuntimeException {
         String clusterId = jsonObject.getString("clusterId");
         ValidatorUtils.isNotNull(clusterId, ValidatorResultCode.VALIDATOR_CLUSTER_ID_NULL);

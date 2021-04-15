@@ -11,7 +11,7 @@ public class BCCluster implements Serializable {
 
     private String clusterName;
 
-    //安装状态从1往后数
+    //安装状态从1往后数,1:初始状态， 2：创建中， 3：创建成功， 4创建失败
     private Integer installStatus;
 
     private int ordererCount;

@@ -13,7 +13,6 @@ import org.bc.auto.service.ClusterService;
 import org.bc.auto.service.NodeService;
 import org.bc.auto.utils.K8SUtils;
 import org.bc.auto.utils.SpringBeanUtil;
-import org.bc.auto.utils.ThreadPoolManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,56 +23,51 @@ public class BlockChainFabricNodeListener implements BlockChainListener{
 
     @Override
     public void doEven(BlockChainEvent blockChainEven) {
-        ThreadPoolManager.newInstance().addExecuteTask(new Runnable() {
-            @Override
-            public void run() {
-                ClusterService clusterService = SpringBeanUtil.getBean(ClusterService.class);
-                NodeService nodeService = SpringBeanUtil.getBean(NodeService.class);
+        ClusterService clusterService = SpringBeanUtil.getBean(ClusterService.class);
+        NodeService nodeService = SpringBeanUtil.getBean(NodeService.class);
 
-                //开始启动K8S的节点(分为Orderer节点和普通的Peer节点)
-                //获取事件的参数实体对象
-                BlockChainFabricNodeEventSource<BCNode> bcNodeBlockChainArrayList = (BlockChainFabricNodeEventSource<BCNode>)blockChainEven.getBlockChainEventSource();
-                List<BCNode> nodeList = bcNodeBlockChainArrayList.geteList();
+        //开始启动K8S的节点(分为Orderer节点和普通的Peer节点)
+        //获取事件的参数实体对象
+        BlockChainFabricNodeEventSource<BCNode> bcNodeBlockChainArrayList = (BlockChainFabricNodeEventSource<BCNode>)blockChainEven.getBlockChainEventSource();
+        List<BCNode> nodeList = bcNodeBlockChainArrayList.geteList();
 
-                for (BCNode bcNode:nodeList) {
-                    //获取集群对象
-                    BCCluster bcCluster = clusterService.getBCCluster(bcNode.getClusterId());
-                    //使用VO对象存储变量
-                    FabricConstructVo fabricConstructVo = new FabricConstructVo();
-                    fabricConstructVo.setNodeName(bcNode.getNodeName());
-                    fabricConstructVo.setNodeDomain(bcNode.getNodeName()+ "." +bcCluster.getClusterName());
-                    fabricConstructVo.setStateDbType(bcCluster.getStateDbType());
-                    fabricConstructVo.setClusterVersion(bcCluster.getClusterVersion());
-                    if(bcNode.getNodeType().intValue() == 1){
-                        fabricConstructVo.setCertPath(bcCluster.getClusterName() + "/crypto-config/ordererOrganizations/" + bcCluster.getClusterName() + "/orderers/");
-                        fabricConstructVo.setDataPath(bcCluster.getClusterName() + "/data/" + bcNode.getOrgName().toLowerCase() + "-");
-                        fabricConstructVo.setMonitorPort(8443);
-                        fabricConstructVo.setNameSapce(bcCluster.getClusterName());
-                        fabricConstructVo.setNodeK8sRole("orderer");
-                        fabricConstructVo.setNodePort(7050);
-                        fabricConstructVo.setOrgName(bcNode.getOrgName());
-                        fabricConstructVo.setOrgMspId(String.join("",bcNode.getOrgName(),"MSP"));
-                        fabricConstructVo.setTlsEnable("true");
-                        fabricConstructVo.setImageName(BlockChainFabricImagesConstant.getFabricOrdereImage(bcCluster.getClusterVersion()));
-                        bcNode = startOrderer(fabricConstructVo,bcNode);
-                    }else{
-                        fabricConstructVo.setCertPath(bcCluster.getClusterName() + "/crypto-config/peerOrganizations/" + bcNode.getOrgName() + "-" + bcCluster.getClusterName() + "/peers/" + fabricConstructVo.getNodeDomain());
-                        fabricConstructVo.setDataPath(bcCluster.getClusterName() + "/data/" + bcNode.getOrgName().toLowerCase() + "-" + bcNode.getNodeName());
-                        fabricConstructVo.setMonitorPort(9443);
-                        fabricConstructVo.setNameSapce(bcCluster.getClusterName());
-                        fabricConstructVo.setNodeK8sRole("peer");
-                        fabricConstructVo.setNodePort(7051);
-                        fabricConstructVo.setOrgName(bcNode.getOrgName());
-                        fabricConstructVo.setOrgMspId(String.join("",bcNode.getOrgName(),"MSP"));
-                        fabricConstructVo.setTlsEnable("true");
-                        fabricConstructVo.setImageName(BlockChainFabricImagesConstant.getFabricPeerImage(bcCluster.getClusterVersion()));
-                        fabricConstructVo.setChainCodePort(7052);
-                        bcNode = startPeer(fabricConstructVo,bcNode);
-                    }
-                    nodeService.updateNode(bcNode);
-                }
+        for (BCNode bcNode:nodeList) {
+            //获取集群对象
+            BCCluster bcCluster = clusterService.getBCCluster(bcNode.getClusterId());
+            //使用VO对象存储变量
+            FabricConstructVo fabricConstructVo = new FabricConstructVo();
+            fabricConstructVo.setNodeName(bcNode.getNodeName());
+            fabricConstructVo.setNodeDomain(bcNode.getNodeName()+ "." +bcCluster.getClusterName());
+            fabricConstructVo.setStateDbType(bcCluster.getStateDbType());
+            fabricConstructVo.setClusterVersion(bcCluster.getClusterVersion());
+            if(bcNode.getNodeType().intValue() == 1){
+                fabricConstructVo.setCertPath(bcCluster.getClusterName() + "/crypto-config/ordererOrganizations/" + bcCluster.getClusterName() + "/orderers/");
+                fabricConstructVo.setDataPath(bcCluster.getClusterName() + "/data/" + bcNode.getOrgName().toLowerCase() + "-");
+                fabricConstructVo.setMonitorPort(8443);
+                fabricConstructVo.setNameSapce(bcCluster.getClusterName());
+                fabricConstructVo.setNodeK8sRole("orderer");
+                fabricConstructVo.setNodePort(7050);
+                fabricConstructVo.setOrgName(bcNode.getOrgName());
+                fabricConstructVo.setOrgMspId(String.join("",bcNode.getOrgName(),"MSP"));
+                fabricConstructVo.setTlsEnable("true");
+                fabricConstructVo.setImageName(BlockChainFabricImagesConstant.getFabricOrdereImage(bcCluster.getClusterVersion()));
+                bcNode = startOrderer(fabricConstructVo,bcNode);
+            }else{
+                fabricConstructVo.setCertPath(bcCluster.getClusterName() + "/crypto-config/peerOrganizations/" + bcNode.getOrgName() + "-" + bcCluster.getClusterName() + "/peers/" + fabricConstructVo.getNodeDomain());
+                fabricConstructVo.setDataPath(bcCluster.getClusterName() + "/data/" + bcNode.getOrgName().toLowerCase() + "-" + bcNode.getNodeName());
+                fabricConstructVo.setMonitorPort(9443);
+                fabricConstructVo.setNameSapce(bcCluster.getClusterName());
+                fabricConstructVo.setNodeK8sRole("peer");
+                fabricConstructVo.setNodePort(7051);
+                fabricConstructVo.setOrgName(bcNode.getOrgName());
+                fabricConstructVo.setOrgMspId(String.join("",bcNode.getOrgName(),"MSP"));
+                fabricConstructVo.setTlsEnable("true");
+                fabricConstructVo.setImageName(BlockChainFabricImagesConstant.getFabricPeerImage(bcCluster.getClusterVersion()));
+                fabricConstructVo.setChainCodePort(7052);
+                bcNode = startPeer(fabricConstructVo,bcNode);
             }
-        });
+            nodeService.updateNode(bcNode);
+        }
     }
 
     //启动Orderer的pod
