@@ -4,7 +4,7 @@ import org.bc.auto.exception.BaseRuntimeException;
 import org.junit.jupiter.api.Test;
 
 public class ShellUtilsTest {
-    private static final String CMD_FILE_PATH = "/Users/mlamp/work_space/bc-auto/src/main/resources/auto/script/test.sh";
+    private static final String CMD_FILE_PATH = "/Users/work_space/bc-auto/src/main/resources/auto/script/test.sh";
 
     @Test
     public void testExec(){

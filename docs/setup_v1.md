@@ -5,7 +5,7 @@
 在编译auto环境之前，请确保java环境安装成功。
   使用`javac` `java`检查java环境是否安装成功。
   ```shell
-  mlampdeMacBook-Pro:~ root# javac
+  MacBook-Pro:~ root# javac
   用法: javac <options> <source files>
   其中, 可能的选项包括:
   -g                         生成所有调试信息
@@ -18,9 +18,9 @@
 在编译auto环境之前，请确保maven环境安装成功。maven环境用于下载jar包。
   使用 `mvn -v`检查maven环境是否安装成功。
    ```shell
-   mlampdeMacBook-Pro:~ root# mvn -v
+   MacBook-Pro:~ root# mvn -v
    Apache Maven 3.6.3 (cecedd343002696d0abb50b32b541b8a6ba2883f)
-   Maven home: /Users/mlamp/dev_tools/apache-maven-3.6.3
+   Maven home: /Users/dev_tools/apache-maven-3.6.3
    Java version: 1.8.0_275, vendor: AdoptOpenJDK, 
    runtime: /Library/Java/JavaVirtualMachines/adoptopenjdk-8.jdk/Contents/Home/jre
    Default locale: zh_CN, platform encoding: UTF-8
@@ -30,7 +30,7 @@
 在编译auto镜像之前，请确保docker环境安装成功。
   使用 `docker -v`检查docker环境是否安装成功。
   ```shell
-  mlampdeMacBook-Pro:~ root# docker -v
+  MacBook-Pro:~ root# docker -v
   Docker version 20.10.5, build 55c4c88
   ```
 ### 镜像编译

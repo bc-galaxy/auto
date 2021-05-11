@@ -9,19 +9,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-/**
- * @Description: 区块链业务操作类
- * @Package: com.bc.baas.controller
- * @ClassName: BlockChainBusiness
- * @author: mason
- * @email: gaobo@mininglamp.com
- * @createDate: 2021/1/25
- * @Company: 北京明略科技有限公司
- *
- * ---------------------------------------------------------
- * Version    Author    Status    Date
- * V1.0       mason       C    	2021/1/25
- */
 @RestController
 @RequestMapping("/bc")
 public class BlockChainBusinessController {
